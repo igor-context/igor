@@ -1,0 +1,6 @@
+schema_version = 1
+name = "fixtures"
+status = "active"
+capability = "Deterministic fixture creation and portable JSON or Parquet interchange"
+python_package = "igor_fixtures"
+allowed_module_imports = ["core"]

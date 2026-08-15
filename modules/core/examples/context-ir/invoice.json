@@ -1,0 +1,17 @@
+{
+  "ir_version": "0.1",
+  "task_id": "invoice-reconciliation",
+  "schema_revision": "invoices.reconciliation.v1",
+  "items": [
+    {
+      "representation_identity": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "evidence_identities": [],
+      "role": "line-item",
+      "rank": 0,
+      "token_estimate": 38
+    }
+  ],
+  "budget_tokens": 256,
+  "created_at": "2026-08-12T00:00:00Z",
+  "metadata": {"domain": "invoice"}
+}

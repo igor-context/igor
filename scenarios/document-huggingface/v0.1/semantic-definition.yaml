@@ -1,0 +1,34 @@
+semantic_definition_id: document.qa
+revision: "2"
+approval: {owner_role: document-domain-reviewer, scope: pinned-docvqa-four-page-qualification, state: approved-for-deterministic-qualification}
+definitions:
+  amount: {meaning: "A monetary or numeric value explicitly printed on the page.", evidence: page-line-or-table-cell}
+  named_entity: {meaning: "A person, organization, place, or product explicitly printed on the page.", evidence: page-span}
+  date_or_time: {meaning: "A date or time expression explicitly printed on the page.", evidence: page-span}
+  abstention: {meaning: "Use when original page evidence is absent, ambiguous, expired, or conflicted.", evidence: required}
+question_type_guidance:
+  others: "Use all visible page content; the answer may occur in prose, a heading, or an unlabeled region."
+  layout: "Use spatial association between labels, headings, blocks, and nearby values."
+  handwritten: "Inspect legible handwritten text as valid page evidence; do not require printed text."
+  form: "Use form structure, including addressee, recipient, signature, label-value, and nearby-field relationships."
+  Image/Photo: "Use visible content inside photographs, advertisements, logos, and illustrations when it answers the question."
+  table/list: "Use row, column, heading, and list-item relationships; preserve the displayed value."
+answerability:
+  answer_when:
+    - "The requested value is explicitly visible and legible on the associated page."
+    - "A label, form field, addressee line, signature, heading, table cell, or nearby text unambiguously associates the value with the question."
+    - "The answer is a short value, including a first name, acronym, amount, date, or place; shortness alone is not ambiguity."
+    - "The evidence is handwritten but legible and unambiguously associated with the requested field or role."
+  abstain_when:
+    - "The requested value is absent from the associated page."
+    - "The relevant content is unreadable or cropped."
+    - "Two or more plausible values remain after applying page structure, authority, and temporal rules."
+  output_consistency:
+    - "When abstain is false, answer must contain the page value and must not be null."
+    - "When abstain is true, answer must be null."
+    - "evidence_page_id identifies the associated page; it is not an answer quotation."
+rules:
+  precedence: [higher-authority, temporally-valid, page-local-evidence, otherwise-abstain]
+  never_infer: [reference-answer, supplied-embedding, supplied-index]
+  ambiguity: "If two valid candidates remain after authority and time resolution, abstain."
+  reference_data_boundary: "Never use answers, answer, image_emb, or question_emb as model input or answer evidence."

@@ -1,0 +1,33 @@
+schema_id: recare.legal
+revision: "1"
+title: Legal amendment and article lifecycle
+domain: legal
+objects:
+  amendment_event:
+    kind: business_object
+    identity_fields: [amendment_law_id]
+    display_name: "Amendment {{ amendment_law_id }}"
+  article_version:
+    kind: business_object
+    identity_fields: [law_id, article_number, revision_id]
+    display_name: "{{ law_id }} Art. {{ article_number }} rev {{ revision_id }}"
+  article_snapshot:
+    kind: source_snapshot
+    identity_fields: [snapshot_id]
+    effective_from_field: effective_from
+    effective_to_field: effective_to
+    superseded_by_field: superseded_by
+    display_name: "{{ law_id }} Art. {{ article_number }} as of {{ effective_from }}"
+fields:
+  amendment_law_id: { type: string, required: true }
+  amendment_reason: { type: string, required: true }
+  law_id: { type: string, required: true }
+  type_of_change: { type: string, required: true }
+  article_number: { type: string, required: true }
+  caption: { type: string, required: true }
+  before_text: { type: string, required: true }
+  after_text: { type: string, required: true }
+  effective_from: { type: datetime, required: true }
+  effective_to: { type: datetime, required: false }
+  revision_id: { type: string, required: true }
+  superseded_by: { type: string, required: false }

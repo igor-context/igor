@@ -1,0 +1,75 @@
+schema_version: '0.1'
+fixture_file: fixtures.json
+source:
+  source_contract: legal.amendments.v1
+  connector_binding: huggingface.recare.v1
+  resource_id: amendment_articles
+mapping:
+  event_collection: amendments
+  child_collection: articles
+  inherited_fields:
+  - amendment_law_id
+  - amendment_reason
+  - type_of_change
+  - law_id
+  article_number:
+    before: article_number_before
+    after: article_number_after
+    fixture_fallback: article_number
+  caption:
+    before: caption_before
+    after: caption_after
+    fixture_fallback: caption
+  text:
+    before: text_before
+    after: text_after
+  revision:
+    before: revision_id_before
+    after: revision_id_after
+  source_identity:
+    before: article_id_before
+    after: article_id_after
+  revision_time:
+    pattern: _(?P<date>[0-9]{8})_
+    format: '%Y%m%d'
+authority:
+  issuer_ref: eurlex-official
+  scope_ref: legal-amendments
+  level: source-authoritative
+requests:
+  query: articles relevant to the amendment rationale
+  consumer: legal-analysis-agent
+  task: article-amendment-analysis
+  purpose: legal-research
+  denied_consumer: unauthorized-agent
+  prohibited_purpose: court-submission
+limits:
+  max_events: 3
+  max_articles: 20
+  retrieval_limit: 10
+  deterministic_dimension: 16
+commands:
+  sync:
+    command: igor-huggingface
+    args:
+    - '{selection}'
+    - '{source_output}'
+    - --rows
+    produces: '{source_output}'
+  qualify:
+    command: igor-runner
+    args:
+    - recare-qualification-live
+    - '{project_root}'
+    - '{live_profile}'
+    - '{source_dir}'
+    - '{qualification_output}'
+    produces: '{qualification_json}'
+  evaluate:
+    command: igor-evaluator
+    args:
+    - authoritative-context
+    - '{qualification_json}'
+    - --output
+    - '{evaluation_output}'
+    produces: '{evaluation_output}'

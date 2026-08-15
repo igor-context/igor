@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling==1.29.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "igor-runner"
+version = "0.1.0"
+description = "IGOR reference composition root"
+requires-python = ">=3.13,<3.14"
+dependencies = ["igor-core", "igor-fixtures", "igor-dlt", "igor-lancedb", "igor-datafusion", "igor-relational", "igor-context-compiler", "pyyaml==6.0.3"]
+
+[project.scripts]
+igor = "igor_runner.project_cli:main"
+igor-runner = "igor_runner.cli:main"
+
+[dependency-groups]
+dev = ["pytest==9.1.1"]
+
+[tool.uv.sources]
+igor-core = { path = "../core" }
+igor-fixtures = { path = "../fixtures" }
+igor-dlt = { path = "../dlt" }
+igor-lancedb = { path = "../lancedb" }
+igor-datafusion = { path = "../datafusion" }
+igor-relational = { path = "../relational" }
+igor-context-compiler = { path = "../context-compiler" }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--strict-config --strict-markers"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/igor_runner"]

@@ -1,0 +1,793 @@
+name: igor
+
+x-core-runtime: &core-runtime
+  image: igor-core:dev
+  build:
+    context: ./modules/core
+    dockerfile: Dockerfile
+  working_dir: /opt/igor-core
+  network_mode: none
+  read_only: true
+  tmpfs:
+    - /tmp:size=64m
+
+x-architecture-runtime: &architecture-runtime
+  image: igor-architecture-harness:dev
+  build:
+    context: ./harnesses/architecture
+    dockerfile: Dockerfile
+  network_mode: none
+  read_only: true
+  tmpfs:
+    - /tmp:size=32m
+
+x-fixtures-runtime: &fixtures-runtime
+  image: igor-fixtures:dev
+  build:
+    context: .
+    dockerfile: modules/fixtures/Dockerfile
+  working_dir: /opt/igor-fixtures
+  network_mode: none
+  read_only: true
+  tmpfs:
+    - /tmp:size=64m
+
+x-evaluator-runtime: &evaluator-runtime
+  image: igor-evaluator:dev
+  build:
+    context: .
+    dockerfile: modules/evaluator/Dockerfile
+  working_dir: /opt/igor-evaluator
+  network_mode: none
+  read_only: true
+  tmpfs:
+    - /tmp:size=64m
+
+x-lancedb-runtime: &lancedb-runtime
+  image: igor-lancedb:dev
+  build:
+    context: .
+    dockerfile: modules/lancedb/Dockerfile
+  working_dir: /opt/igor-lancedb
+  network_mode: none
+  read_only: true
+  tmpfs:
+    - /tmp:size=64m
+
+x-dlt-runtime: &dlt-runtime
+  image: igor-dlt:dev
+  build:
+    context: .
+    dockerfile: modules/dlt/Dockerfile
+  working_dir: /opt/igor-dlt
+  network_mode: none
+  read_only: true
+  tmpfs:
+    - /tmp:size=128m
+
+x-datafusion-runtime: &datafusion-runtime
+  image: igor-datafusion:dev
+  build:
+    context: .
+    dockerfile: modules/datafusion/Dockerfile
+  working_dir: /opt/igor-datafusion
+  network_mode: none
+  read_only: true
+  tmpfs:
+    - /tmp:size=64m
+
+x-relational-runtime: &relational-runtime
+  image: igor-relational:dev
+  build:
+    context: .
+    dockerfile: modules/relational/Dockerfile
+  working_dir: /opt/igor-relational
+  network_mode: none
+  read_only: true
+  tmpfs:
+    - /tmp:size=64m
+
+x-runner-runtime: &runner-runtime
+  image: igor-runner:dev
+  build:
+    context: .
+    dockerfile: modules/runner/Dockerfile
+  working_dir: /opt/igor-runner
+  network_mode: none
+  read_only: true
+  tmpfs:
+    - /tmp:size=64m
+
+x-huggingface-runtime: &huggingface-runtime
+  image: igor-huggingface:dev
+  build:
+    context: .
+    dockerfile: modules/huggingface/Dockerfile
+  working_dir: /opt/igor-huggingface
+  network_mode: none
+  read_only: true
+  tmpfs:
+    - /tmp:size=64m
+
+x-context-compiler-runtime: &context-compiler-runtime
+  image: igor-context-compiler:dev
+  build:
+    context: .
+    dockerfile: modules/context-compiler/Dockerfile
+  working_dir: /opt/igor-context-compiler
+  network_mode: none
+  read_only: true
+  tmpfs:
+    - /tmp:size=64m
+
+services:
+  architecture-check:
+    <<: *architecture-runtime
+    profiles: [check]
+    volumes:
+      - .:/workspace:ro
+    command: ["python", "/opt/igor-architecture/validate_architecture.py", "/workspace"]
+
+  architecture-test:
+    <<: *architecture-runtime
+    profiles: [test]
+    command: ["python", "-m", "unittest", "discover", "-s", "/opt/igor-architecture/tests", "-v"]
+
+  core-lock:
+    profiles: [maintenance]
+    image: igor-core-lock:dev
+    build:
+      context: ./modules/core
+      dockerfile: Dockerfile.lock
+    entrypoint: ["uv"]
+    working_dir: /workspace
+    volumes:
+      - ./modules/core:/workspace
+    command: ["lock"]
+
+  context-compiler-lock:
+    profiles: [maintenance]
+    image: igor-context-compiler-lock:dev
+    build:
+      context: ./modules/core
+      dockerfile: Dockerfile.lock
+    entrypoint: ["uv"]
+    working_dir: /workspace
+    volumes:
+      - ./modules/core:/workspace/core
+      - ./modules/context-compiler:/workspace/context-compiler
+    command: ["lock", "--project", "/workspace/context-compiler"]
+
+  huggingface-lock:
+    profiles: [maintenance]
+    image: igor-huggingface-lock:dev
+    build:
+      context: ./modules/core
+      dockerfile: Dockerfile.lock
+    entrypoint: ["uv"]
+    working_dir: /workspace
+    volumes:
+      - ./modules/huggingface:/workspace/huggingface
+    command: ["lock", "--project", "/workspace/huggingface"]
+
+  fixtures-lock:
+    profiles: [maintenance]
+    image: igor-fixtures-lock:dev
+    build:
+      context: ./modules/core
+      dockerfile: Dockerfile.lock
+    entrypoint: ["uv"]
+    working_dir: /workspace
+    volumes:
+      - ./modules/core:/workspace/core
+      - ./modules/fixtures:/workspace/fixtures
+      - ./modules/dlt:/workspace/dlt
+    command: ["lock", "--project", "/workspace/fixtures"]
+
+  evaluator-lock:
+    profiles: [maintenance]
+    image: igor-evaluator-lock:dev
+    build:
+      context: ./modules/core
+      dockerfile: Dockerfile.lock
+    entrypoint: ["uv"]
+    working_dir: /workspace
+    volumes:
+      - ./modules/core:/workspace/core
+      - ./modules/evaluator:/workspace/evaluator
+    command: ["lock", "--project", "/workspace/evaluator"]
+
+  lancedb-lock:
+    profiles: [maintenance]
+    image: igor-lancedb-lock:dev
+    build:
+      context: ./modules/core
+      dockerfile: Dockerfile.lock
+    entrypoint: ["uv"]
+    working_dir: /workspace
+    volumes:
+      - ./modules/core:/workspace/core
+      - ./modules/lancedb:/workspace/lancedb
+    command: ["lock", "--project", "/workspace/lancedb"]
+
+  dlt-lock:
+    profiles: [maintenance]
+    image: igor-dlt-lock:dev
+    build:
+      context: ./modules/core
+      dockerfile: Dockerfile.lock
+    entrypoint: ["uv"]
+    working_dir: /workspace
+    volumes:
+      - ./modules/core:/workspace/core
+      - ./modules/dlt:/workspace/dlt
+    command: ["lock", "--project", "/workspace/dlt"]
+
+  datafusion-lock:
+    profiles: [maintenance]
+    image: igor-datafusion-lock:dev
+    build:
+      context: ./modules/core
+      dockerfile: Dockerfile.lock
+    entrypoint: ["uv"]
+    working_dir: /workspace
+    volumes:
+      - ./modules/core:/workspace/core
+      - ./modules/lancedb:/workspace/lancedb
+      - ./modules/datafusion:/workspace/datafusion
+    command: ["lock", "--project", "/workspace/datafusion"]
+
+  relational-lock:
+    profiles: [maintenance]
+    image: igor-relational-lock:dev
+    build:
+      context: ./modules/core
+      dockerfile: Dockerfile.lock
+    entrypoint: ["uv"]
+    working_dir: /workspace
+    volumes:
+      - ./modules/core:/workspace/core
+      - ./modules/lancedb:/workspace/lancedb
+      - ./modules/datafusion:/workspace/datafusion
+      - ./modules/relational:/workspace/relational
+    command: ["lock", "--project", "/workspace/relational"]
+
+  core-test:
+    <<: *core-runtime
+    profiles: [test]
+    command: ["pytest", "-p", "no:cacheprovider", "-q"]
+
+  context-compiler-test:
+    <<: *context-compiler-runtime
+    profiles: [test]
+    command: ["pytest", "-p", "no:cacheprovider", "-q"]
+
+  mistral-multimodal-smoke:
+    <<: *context-compiler-runtime
+    profiles: [qualification]
+    env_file:
+      - ./modules/context-compiler/.env
+    network_mode: ""
+    networks: [qualification]
+    volumes:
+      - ./config:/opt/config:ro
+      - ./.igor/docs-visual-checks:/tmp/image-fixture:ro
+      - ./.igor/mistral-multimodal-smoke:/tmp/mistral-smoke
+    command: ["python", "mistral_multimodal_qualification.py", "/tmp/image-fixture/igor-context-compiler-flow.png", "/tmp/mistral-smoke/invoice-fixture.pdf", "/opt/config/providers/completions/mistral-small-4-image.yaml", "/opt/config/providers/completions/mistral-small-4-document-qna.yaml", "/tmp/mistral-smoke/qualification.json"]
+
+  huggingface-test:
+    <<: *huggingface-runtime
+    profiles: [test]
+    command: ["pytest", "-p", "no:cacheprovider", "-q"]
+
+  huggingface-qualification:
+    <<: *huggingface-runtime
+    profiles: [qualification]
+    network_mode: ""
+    networks: [qualification]
+    volumes:
+      - ./.igor/huggingface-qualification:/tmp/huggingface-qualification
+      - ./scenarios/support-huggingface/v0.1:/opt/scenarios/support-huggingface/v0.1:ro
+    command: ["igor-huggingface", "/opt/scenarios/support-huggingface/v0.1/selection.json", "/tmp/huggingface-qualification/acquisition.json"]
+
+  huggingface-image-qualification:
+    <<: *huggingface-runtime
+    profiles: [qualification]
+    network_mode: ""
+    networks: [qualification]
+    volumes:
+      - ./scenarios/image-huggingface/v0.1:/opt/scenarios/image-huggingface/v0.1:ro
+      - ./.igor/huggingface-image-qualification:/tmp/huggingface-image-qualification
+    command: ["igor-huggingface", "/opt/scenarios/image-huggingface/v0.1/selection.json", "/tmp/huggingface-image-qualification", "--image"]
+
+  huggingface-document-acquisition:
+    <<: *huggingface-runtime
+    profiles: [check]
+    network_mode: ""
+    networks: [qualification]
+    volumes:
+      - ./scenarios/document-huggingface/v0.1:/opt/scenarios/document-huggingface/v0.1:ro
+      - ./.igor/huggingface-document-acquisition:/tmp/hf-doc-acq
+    command: ["igor-huggingface", "/opt/scenarios/document-huggingface/v0.1/live-selection.json", "/tmp/hf-doc-acq", "--document"]
+
+  context-compiler-contract:
+    <<: *context-compiler-runtime
+    profiles: [check]
+    command: ["python", "-c", "from igor_context_compiler import DeterministicProviders, EmbeddingRequest, QualifiedRepresentation; from igor_core import ContentPart, EmbeddingSpace, ModelProfile, Representation, SchemaDescriptor, stable_identity; s=SchemaDescriptor(schema_version='0.1',schema_id='contract',revision='1'); r=Representation(ir_version='0.1',representation_type='text',schema_ref=s,source_snapshot_ids=('sha256:'+'1'*64,),payload='contract content'); p=ModelProfile(schema_version='0.1',profile_id='deterministic',capability='embedding',provider='deterministic',model='hash',revision='1'); space=EmbeddingSpace(ir_version='0.1',provider='deterministic',model='hash',model_revision='1',dimension=8,dtype='float64',metric='cosine',normalized=False,input_schema_identity=s.identity); part=ContentPart(kind='text',media_type='text/plain',text='contract content',content_sha256=stable_identity('contract content')); outcome=DeterministicProviders().embed(EmbeddingRequest(output_identity=r.identity,input=QualifiedRepresentation(representation=r,parts=(part,)),space=space,profile=p)); assert outcome.status == 'succeeded' and len(outcome.value) == 8; print('context compiler contract passed')"]
+
+  context-compiler-runtime-qualification:
+    <<: *context-compiler-runtime
+    profiles: [check]
+    command: ["pytest", "-p", "no:cacheprovider", "-q", "tests/test_runtime.py"]
+
+  context-compiler-live-qualification:
+    <<: *context-compiler-runtime
+    profiles: [qualification]
+    env_file:
+      - ./modules/context-compiler/.env
+    network_mode: ""
+    networks: [qualification]
+    volumes:
+      - ./.igor/context-compiler-live:/tmp/live-provider-qualification
+    command: ["python", "live_qualification.py", "/tmp/live-provider-qualification/result.json"]
+
+  support-live:
+    <<: *runner-runtime
+    profiles: [qualification]
+    env_file:
+      - ./modules/context-compiler/.env
+    environment:
+      IGOR_LANCE_ROOT: /tmp/lance
+    network_mode: ""
+    networks: [qualification]
+    volumes:
+      - ./scenarios/support/v0.1:/opt/scenarios/support/v0.1:ro
+      - ./config:/opt/config:ro
+      - ./.igor/support-live:/tmp/support-live
+      - ./.igor/support-live-lance:/tmp/lance
+    command: ["igor-runner", "support-smoke", "/opt/scenarios/support/v0.1", "/opt/config/compiler/live-v0.yaml", "/tmp/support-live"]
+
+  semantic-sql-live:
+    <<: *runner-runtime
+    profiles: [qualification]
+    env_file:
+      - ./modules/context-compiler/.env
+    environment:
+      IGOR_LANCE_ROOT: /tmp/semantic-sql-live-lance
+    network_mode: ""
+    networks: [qualification]
+    volumes:
+      - ./config:/opt/config:ro
+      - ./.igor/semantic-sql-live:/tmp/semantic-sql-live
+      - ./.igor/semantic-sql-live-lance:/tmp/semantic-sql-live-lance
+    command: ["igor-runner", "semantic-sql-live", "/opt/config/compiler/live-v0.yaml", "/tmp/semantic-sql-live/qualification.json", "/tmp/semantic-sql-live-lance"]
+
+  semantic-sql-evaluate:
+    <<: *evaluator-runtime
+    profiles: [qualification]
+    volumes:
+      - ./.igor/support-hf-live-e2e:/tmp/support-hf-live-e2e:ro
+      - ./.igor/semantic-sql-evaluation:/tmp/semantic-sql-evaluation
+    command: ["igor-evaluator", "semantic-sql", "/tmp/support-hf-live-e2e/baseline/artifacts/semantic-sql.json", "--output", "/tmp/semantic-sql-evaluation/evaluation.json"]
+
+  support-hf-smoke:
+    <<: *runner-runtime
+    profiles: [check]
+    environment:
+      IGOR_LANCE_ROOT: /tmp/support-hf-lance
+    volumes:
+      - ./scenarios/support/v0.1:/opt/scenarios/support/v0.1:ro
+      - ./config:/opt/config:ro
+      - ./.igor/huggingface-qualification:/tmp/huggingface-qualification:ro
+      - ./.igor/support-hf-smoke:/tmp/support-hf-smoke
+      - ./.igor/support-hf-lance:/tmp/support-hf-lance
+    command: ["igor-runner", "support-huggingface-smoke", "/opt/scenarios/support/v0.1", "/opt/config/reference.yaml", "/tmp/huggingface-qualification/acquisition.json", "/tmp/support-hf-smoke"]
+
+  support-hf-e2e:
+    <<: *runner-runtime
+    profiles: [check]
+    environment:
+      IGOR_LANCE_ROOT: /tmp/support-hf-e2e-lance
+    volumes:
+      - ./scenarios/support/v0.1:/opt/scenarios/support/v0.1:ro
+      - ./config:/opt/config:ro
+      - ./.igor/huggingface-qualification:/tmp/huggingface-qualification:ro
+      - ./.igor/support-hf-e2e:/tmp/support-hf-e2e
+    command: ["igor-runner", "support-huggingface-e2e", "/opt/scenarios/support/v0.1", "/opt/config/reference.yaml", "/tmp/huggingface-qualification/acquisition.json", "/tmp/support-hf-e2e"]
+
+  support-hf-live-e2e:
+    <<: *runner-runtime
+    profiles: [qualification]
+    env_file:
+      - ./modules/context-compiler/.env
+    environment:
+      IGOR_LANCE_ROOT: /tmp/support-hf-live-e2e-lance
+    network_mode: ""
+    networks: [qualification]
+    volumes:
+      - ./scenarios/support/v0.1:/opt/scenarios/support/v0.1:ro
+      - ./config:/opt/config:ro
+      - ./.igor/huggingface-qualification:/tmp/huggingface-qualification:ro
+      - ./.igor/support-hf-live-e2e:/tmp/support-hf-live-e2e
+    command: ["igor-runner", "support-huggingface-e2e", "/opt/scenarios/support/v0.1", "/opt/config/compiler/live-v0.yaml", "/tmp/huggingface-qualification/acquisition.json", "/tmp/support-hf-live-e2e"]
+
+  support-hf-evaluate:
+    <<: *evaluator-runtime
+    profiles: [check]
+    volumes:
+      - ./scenarios/support-huggingface/v0.1:/opt/scenarios/support-huggingface/v0.1:ro
+      - ./.igor/support-hf-e2e:/tmp/support-hf-e2e:ro
+      - ./.igor/support-hf-report:/tmp/support-hf-report
+    command: ["sh", "-c", "igor-evaluator evaluate /opt/scenarios/support-huggingface/v0.1 /tmp/support-hf-e2e/baseline --json --output /tmp/support-hf-report/evaluation.json || test $$? -eq 1; igor-evaluator report /tmp/support-hf-e2e/baseline /tmp/support-hf-report/evaluation.json /tmp/support-hf-report/index.html"]
+
+  support-hf-live-evaluate:
+    <<: *evaluator-runtime
+    profiles: [qualification]
+    volumes:
+      - ./scenarios/support-huggingface/v0.1:/opt/scenarios/support-huggingface/v0.1:ro
+      - ./.igor/support-hf-live-e2e:/tmp/support-hf-e2e:ro
+      - ./.igor/support-hf-live-report:/tmp/support-hf-report
+      - ./.igor/support-hf-report:/tmp/support-hf-public-report
+    command: ["sh", "-c", "igor-evaluator evaluate /opt/scenarios/support-huggingface/v0.1 /tmp/support-hf-e2e/baseline --json --output /tmp/support-hf-report/evaluation.json || test $$? -eq 1; igor-evaluator report /tmp/support-hf-e2e/baseline /tmp/support-hf-report/evaluation.json /tmp/support-hf-public-report/index.html; cp /tmp/support-hf-report/evaluation.json /tmp/support-hf-public-report/evaluation.json"]
+
+  image-context-e2e:
+    <<: *runner-runtime
+    profiles: [check]
+    environment:
+      IGOR_LANCE_ROOT: /tmp/image-lance
+    volumes:
+      - ./config:/opt/config:ro
+      - ./.igor/image-context-e2e:/tmp/image-context-e2e
+      - ./.igor/image-context-e2e-lance:/tmp/image-lance
+    command: ["igor-runner", "image-context", "/opt/config/reference.yaml", "/tmp/image-context-e2e", "--mutation"]
+
+  image-context-live:
+    <<: *runner-runtime
+    profiles: [qualification]
+    env_file:
+      - ./modules/context-compiler/.env
+    environment:
+      IGOR_LANCE_ROOT: /tmp/image-live-lance
+    network_mode: ""
+    networks: [qualification]
+    volumes:
+      - ./config:/opt/config:ro
+      - ./.igor/image-context-live:/tmp/image-context-live
+      - ./.igor/image-context-live-lance:/tmp/image-live-lance
+    command: ["igor-runner", "image-context", "/opt/config/compiler/live-v0.yaml", "/tmp/image-context-live"]
+
+  image-huggingface-deterministic:
+    <<: *runner-runtime
+    profiles: [check]
+    volumes:
+      - ./config:/opt/config:ro
+      - ./scenarios/image-huggingface/v0.1:/opt/scenarios/image-huggingface/v0.1:ro
+      - ./.igor/huggingface-image-qualification:/tmp/huggingface-image-qualification:ro
+      - ./.igor/image-huggingface-deterministic:/tmp/image-huggingface-deterministic
+    command: ["igor-runner", "image-huggingface", "/opt/scenarios/image-huggingface/v0.1", "/tmp/huggingface-image-qualification", "/opt/config/reference.yaml", "/tmp/image-huggingface-deterministic"]
+
+  image-huggingface-live:
+    <<: *runner-runtime
+    profiles: [qualification]
+    env_file:
+      - ./modules/context-compiler/.env
+    network_mode: ""
+    networks: [qualification]
+    volumes:
+      - ./config:/opt/config:ro
+      - ./scenarios/image-huggingface/v0.1:/opt/scenarios/image-huggingface/v0.1:ro
+      - ./.igor/huggingface-image-qualification:/tmp/huggingface-image-qualification:ro
+      - ./.igor/image-huggingface-live:/tmp/image-huggingface-live
+    command: ["igor-runner", "image-huggingface", "/opt/scenarios/image-huggingface/v0.1", "/tmp/huggingface-image-qualification", "/opt/config/compiler/live-image-general-v0.yaml", "/tmp/image-huggingface-live"]
+
+  core-contract:
+    <<: *core-runtime
+    profiles: [check]
+    command: ["igor-core", "contract", "validate", "/opt/igor-core/examples/run-v0.1", "--json"]
+
+  core-context-contract:
+    <<: *core-runtime
+    profiles: [check]
+    volumes:
+      - ./modules/core/examples/context-ir:/opt/context-ir:ro
+    command: ["sh", "-c", "for path in /opt/context-ir/*.json; do igor-core context validate \"$$path\" --json; done"]
+
+  scenario-test:
+    <<: *fixtures-runtime
+    profiles: [test]
+    command: ["pytest", "-p", "no:cacheprovider", "-q"]
+
+  scenario-validate:
+    <<: *fixtures-runtime
+    profiles: [check]
+    volumes:
+      - ./scenarios/support/v0.1:/opt/scenarios/support/v0.1:ro
+    command: ["igor-fixtures", "scenario", "validate", "/opt/scenarios/support/v0.1", "--json"]
+
+  evaluator-test:
+    <<: *evaluator-runtime
+    profiles: [test]
+    command: ["pytest", "-p", "no:cacheprovider", "-q"]
+
+  evaluator-fixture:
+    <<: *evaluator-runtime
+    profiles: [check]
+    volumes:
+      - ./.igor/evaluator-fixture:/tmp/evaluator-fixture
+    command: ["sh", "-c", "igor-evaluator fixture /tmp/evaluator-fixture && igor-evaluator evaluate /opt/scenarios/support/v0.1 /tmp/evaluator-fixture --json"]
+
+  lancedb-test:
+    <<: *lancedb-runtime
+    profiles: [test]
+    command: ["pytest", "-p", "no:cacheprovider", "-q"]
+
+  dlt-test:
+    <<: *dlt-runtime
+    profiles: [test]
+    command: ["pytest", "-p", "no:cacheprovider", "-q"]
+
+  dlt-rest-qualification:
+    <<: *dlt-runtime
+    profiles: [check]
+    command: ["pytest", "-p", "no:cacheprovider", "-q", "tests/test_transport.py", "-k", "rest_dlt_lance"]
+
+  dlt-sql-qualification:
+    <<: *dlt-runtime
+    profiles: [check]
+    command: ["pytest", "-p", "no:cacheprovider", "-q", "tests/test_transport.py", "-k", "sql_dlt_lance"]
+
+  dlt-mcp-qualification:
+    <<: *dlt-runtime
+    profiles: [check]
+    command: ["pytest", "-p", "no:cacheprovider", "-q", "tests/test_transport.py", "-k", "mcp_resource_adapter"]
+
+  minio:
+    image: minio/minio:RELEASE.2025-07-23T15-54-02Z
+    profiles: [qualification]
+    command: ["server", "/data", "--address", ":9000", "--console-address", ":9001"]
+    environment:
+      # Local development only — not used in production
+      MINIO_ROOT_USER: igor-minio
+      MINIO_ROOT_PASSWORD: igor-minio-secret
+    volumes:
+      - ./.igor/minio-lancedb:/data
+    networks: [qualification]
+
+  minio-init:
+    image: minio/mc:RELEASE.2025-08-13T08-35-41Z
+    profiles: [qualification]
+    depends_on: [minio]
+    entrypoint: ["/bin/sh", "-c"]
+    # Local development only — not used in production
+    command: ["until mc alias set local http://minio:9000 igor-minio igor-minio-secret; do sleep 1; done; mc mb --ignore-existing local/igor-lance"]
+    networks: [qualification]
+
+  lancedb-remote-smoke:
+    image: igor-lancedb:dev
+    build:
+      context: .
+      dockerfile: modules/lancedb/Dockerfile
+    profiles: [qualification]
+    depends_on: [minio-init]
+    working_dir: /opt/igor-lancedb
+    environment:
+      # Local development only — not used in production
+      AWS_ACCESS_KEY_ID: igor-minio
+      AWS_SECRET_ACCESS_KEY: igor-minio-secret
+      AWS_DEFAULT_REGION: us-east-1
+      IGOR_S3_ENDPOINT: http://minio:9000
+      IGOR_LANCE_URI: s3://igor-lance/qualification
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m
+    networks: [qualification]
+    command: ["python", "tests/remote_smoke.py"]
+
+  dlt-remote-smoke:
+    <<: *dlt-runtime
+    profiles: [qualification]
+    depends_on: [minio-init]
+    network_mode: ""
+    environment:
+      # Local development only — not used in production
+      AWS_ACCESS_KEY_ID: igor-minio
+      AWS_SECRET_ACCESS_KEY: igor-minio-secret
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_ENDPOINT_URL: http://minio:9000
+      IGOR_LANCE_URI: s3://igor-lance/lance
+    networks: [qualification]
+    command: ["python", "tests/remote_smoke.py"]
+
+  datafusion-test:
+    <<: *datafusion-runtime
+    profiles: [test]
+    command: ["pytest", "-p", "no:cacheprovider", "-q"]
+
+  relational-test:
+    <<: *relational-runtime
+    profiles: [test]
+    command: ["pytest", "-p", "no:cacheprovider", "-q"]
+
+  relational-smoke:
+    <<: *relational-runtime
+    profiles: [check]
+    command: ["python", "-c", "from pathlib import Path; from igor_datafusion import AnalyticalEngine; from igor_lancedb import LanceStore; from igor_relational import ModelManifest, ModelSpec, RelationalRunner; p=Path('/tmp/smoke'); s=LanceStore(p); s.create('events', [{'id': 1, 'amount': 2}]); r=RelationalRunner(AnalyticalEngine(s), s).run(ModelManifest('0.1', (ModelSpec('totals', 'SELECT SUM(amount) AS total FROM events'),))); assert r.rows == {'totals': 1} and s.read('totals').to_pylist() == [{'total': 2}]; print('relational smoke passed')"]
+
+  runner-lock:
+    profiles: [maintenance]
+    image: igor-runner-lock:dev
+    build:
+      context: ./modules/core
+      dockerfile: Dockerfile.lock
+    entrypoint: ["uv"]
+    working_dir: /workspace
+    volumes:
+      - ./modules/core:/workspace/core
+      - ./modules/fixtures:/workspace/fixtures
+      - ./modules/dlt:/workspace/dlt
+      - ./modules/lancedb:/workspace/lancedb
+      - ./modules/datafusion:/workspace/datafusion
+      - ./modules/relational:/workspace/relational
+      - ./modules/context-compiler:/workspace/context-compiler
+      - ./modules/runner:/workspace/runner
+    command: ["lock", "--project", "/workspace/runner"]
+
+  runner-test:
+    <<: *runner-runtime
+    profiles: [test]
+    volumes:
+      - ./scenarios/document-huggingface/v0.1:/opt/scenarios/document-huggingface/v0.1:ro
+      - ./scenarios/recare-legal/v0.1:/opt/scenarios/recare-legal/v0.1:ro
+    command: ["pytest", "-p", "no:cacheprovider", "-q"]
+
+  document-qualification:
+    <<: *runner-runtime
+    profiles: [check]
+    volumes:
+      - ./scenarios/document-huggingface/v0.1:/opt/scenarios/document-huggingface/v0.1:ro
+      - ./.igor/document-qualification:/tmp/document-qualification
+      - ./.igor/huggingface-document-acquisition:/tmp/hf-doc-acq:ro
+    command: ["igor-runner", "document-qualification", "/opt/scenarios/document-huggingface/v0.1", "/tmp/document-qualification", "/tmp/hf-doc-acq"]
+
+  huggingface-recare-acquisition:
+    <<: *huggingface-runtime
+    profiles: [qualification]
+    network_mode: ""
+    networks: [qualification]
+    read_only: false
+    volumes:
+      - ./scenarios/recare-legal:/opt/scenarios/recare-legal:ro
+      - ./.igor/recare-acquisition:/tmp/recare-acquisition
+    command: ["igor-huggingface", "/opt/scenarios/recare-legal/v0.1/selection.json", "/tmp/recare-acquisition/acquisition.json", "--rows"]
+
+  document-live-qualification:
+    <<: *runner-runtime
+    profiles: [qualification]
+    env_file:
+      - ./modules/context-compiler/.env
+    network_mode: ""
+    networks: [qualification]
+    volumes:
+      - ./config:/opt/config:ro
+      - ./scenarios/document-huggingface/v0.1:/opt/scenarios/document-huggingface/v0.1:ro
+      - ./.igor/huggingface-document-acquisition:/tmp/hf-doc-acq:ro
+      - ./.igor/document-live-qualification-mistral-image-v0:/tmp/document-live-qualification
+    command: ["igor-runner", "document-live-qualification", "/opt/scenarios/document-huggingface/v0.1", "/tmp/hf-doc-acq", "/tmp/document-live-qualification", "/opt/config/compiler/live-image-general-v0.yaml"]
+
+  image-huggingface-evaluate:
+    <<: *evaluator-runtime
+    profiles: [check]
+    volumes:
+      - ./.igor/image-huggingface-deterministic:/tmp/image-run:ro
+      - ./.igor/huggingface-image-qualification:/tmp/image-acquisition:ro
+      - ./.igor/image-huggingface-evaluation:/tmp/evaluation
+    command: ["igor-evaluator", "image", "/tmp/image-run/result.json", "--judgments", "/tmp/image-acquisition/judgments.json", "--output", "/tmp/evaluation/evaluation.json"]
+
+  image-huggingface-live-evaluate:
+    <<: *evaluator-runtime
+    profiles: [qualification]
+    volumes:
+      - ./.igor/image-huggingface-live:/tmp/image-run:ro
+      - ./.igor/huggingface-image-qualification:/tmp/image-acquisition:ro
+      - ./.igor/image-huggingface-live-evaluation:/tmp/evaluation
+    command: ["igor-evaluator", "image", "/tmp/image-run/result.json", "--judgments", "/tmp/image-acquisition/judgments.json", "--output", "/tmp/evaluation/evaluation.json"]
+
+  runner-smoke:
+    <<: *runner-runtime
+    profiles: [check]
+    volumes:
+      - ./scenarios/support/v0.1:/opt/scenarios/support/v0.1:ro
+      - ./config:/opt/config:ro
+      - ./.igor/runner-smoke:/tmp/runner-smoke
+      - ./.igor/runner-smoke-lance:/tmp/lance
+    environment:
+      IGOR_LANCE_ROOT: /tmp/lance
+    command: ["igor-runner", "support-smoke", "/opt/scenarios/support/v0.1", "/opt/config/reference.yaml", "/tmp/runner-smoke"]
+
+  igor-project-smoke:
+    <<: *runner-runtime
+    profiles: [check]
+    read_only: false
+    volumes:
+      - ./.igor/igor-project-smoke:/tmp/igor-project-smoke
+    command: ["python", "-m", "igor_runner.project_smoke", "/tmp/igor-project-smoke"]
+
+  igor-project-cli:
+    image: igor-project-cli:dev
+    profiles: [qualification]
+    build:
+      context: .
+      dockerfile: harnesses/project-cli/Dockerfile
+    working_dir: /workspace
+    network_mode: ""
+    networks: [qualification]
+    read_only: false
+    env_file:
+      - ./modules/context-compiler/.env
+    environment:
+      PATH: /opt/igor-project-cli/.venv/bin:/usr/local/bin:/usr/bin:/bin
+    volumes:
+      - ./scenarios/recare-legal:/opt/scenarios/recare-legal:ro
+      - ./.igor/project-cli:/workspace
+    command: ["igor", "--help"]
+
+  recare-deterministic-qualification:
+    <<: *runner-runtime
+    profiles: [qualification]
+    network_mode: ""
+    networks: [qualification]
+    volumes:
+      - ./scenarios/recare-legal:/opt/scenarios/recare-legal:ro
+      - ./config:/opt/config:ro
+      - ./.igor/recare-deterministic:/tmp/recare-deterministic
+    command: ["igor-runner", "recare-qualification", "/opt/scenarios/recare-legal/v0.1", "/tmp/recare-deterministic"]
+
+  recare-authoritative-evaluate:
+    <<: *evaluator-runtime
+    profiles: [qualification]
+    volumes:
+      - ./.igor/recare-deterministic:/tmp/recare-deterministic:ro
+      - ./.igor/recare-evaluation:/tmp/recare-evaluation
+    command: ["igor-evaluator", "authoritative-context", "/tmp/recare-deterministic/qualification.json", "--output", "/tmp/recare-evaluation/evaluation.json"]
+
+  recare-live-qualification:
+    <<: *runner-runtime
+    profiles: [qualification]
+    depends_on:
+      recare-deterministic-qualification:
+        condition: service_completed_successfully
+      huggingface-recare-acquisition:
+        condition: service_completed_successfully
+    network_mode: ""
+    networks: [qualification]
+    read_only: false
+    env_file:
+      - ./modules/context-compiler/.env
+    volumes:
+      - ./scenarios/recare-legal:/opt/scenarios/recare-legal:ro
+      - ./config:/opt/config:ro
+      - ./.igor/recare-acquisition:/tmp/recare-acquisition:ro
+      - ./.igor/recare-live:/tmp/recare-live
+    command: ["igor-runner", "recare-qualification-live", "/opt/scenarios/recare-legal/v0.1", "/opt/config/compiler/live-text-general-v0.yaml", "/tmp/recare-acquisition", "/tmp/recare-live"]
+
+  context-e2e:
+    <<: *runner-runtime
+    profiles: [check]
+    volumes:
+      - ./scenarios/support/v0.1:/opt/scenarios/support/v0.1:ro
+      - ./config:/opt/config:ro
+      - ./.igor/context-e2e:/tmp/context-e2e
+    command: ["sh", "-c", "rm -rf /tmp/context-e2e/baseline /tmp/context-e2e/mutated && igor-runner context-e2e /opt/scenarios/support/v0.1 /opt/config/reference.yaml /tmp/context-e2e && mkdir -p /tmp/context-e2e/reports && PYTHONPATH=/opt/evaluator/src python -c 'from igor_evaluator.cli import main; raise SystemExit(main([\"evaluate\", \"/opt/scenarios/support/v0.1\", \"/tmp/context-e2e/baseline\", \"--json\", \"--output\", \"/tmp/context-e2e/reports/baseline.json\"]))' && PYTHONPATH=/opt/evaluator/src python -c 'from igor_evaluator.cli import main; raise SystemExit(main([\"evaluate\", \"/opt/scenarios/support/v0.1\", \"/tmp/context-e2e/mutated\", \"--json\", \"--output\", \"/tmp/context-e2e/reports/mutated.json\"]))'"]
+
+  scenario-generate:
+    <<: *fixtures-runtime
+    profiles: [maintenance]
+    user: "0:0"
+    read_only: false
+    working_dir: /opt/igor-fixtures
+    volumes:
+      - .:/workspace
+    command: ["igor-fixtures", "scenario", "generate", "/workspace/scenarios/support/v0.1"]
+
+networks:
+  qualification:

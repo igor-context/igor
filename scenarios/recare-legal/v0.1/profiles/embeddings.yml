@@ -1,0 +1,10 @@
+schema_version: "0.1"
+profile_id: legal.text.embedding.v1
+capability: embedding
+provider: voyage
+model: voyage-multimodal-3
+revision: "1"
+parameters:
+  dimensions: 1024
+  supported_content_kinds: [text]
+  max_concurrency: 2

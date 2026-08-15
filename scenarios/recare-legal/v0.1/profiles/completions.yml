@@ -1,0 +1,9 @@
+schema_version: "0.1"
+profile_id: legal.text.completion.v1
+capability: completion
+provider: deepseek
+model: deepseek-chat
+revision: "1"
+parameters:
+  supported_content_kinds: [text]
+  max_concurrency: 2

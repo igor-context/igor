@@ -1,0 +1,12 @@
+schema_version: "0.1"
+outputs:
+  legal_context_delivery:
+    output_type: context_package
+    retrieval: article_search
+    contract: legal.research-agent.v1
+    target_roles: [article_version, amendment_enrichment]
+    format: structured
+    destination: agent
+    display_name: Authoritative legal context package
+    settings:
+      citation_style: source-reference

@@ -1,0 +1,30 @@
+[build-system]
+requires = ["hatchling==1.29.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "igor-fixtures"
+version = "0.1.0"
+description = "Deterministic scenario fixtures and portable interchange for IGOR"
+requires-python = ">=3.13,<3.14"
+dependencies = [
+  "igor-core",
+]
+
+[project.scripts]
+igor-fixtures = "igor_fixtures.cli:main"
+
+[dependency-groups]
+dev = [
+  "pytest==9.1.1",
+]
+
+[tool.uv.sources]
+igor-core = { path = "../core" }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--strict-config --strict-markers"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/igor_fixtures"]

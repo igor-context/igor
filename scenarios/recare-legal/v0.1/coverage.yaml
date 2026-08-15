@@ -1,0 +1,13 @@
+scenarios:
+  - id: simple_amendment
+    description: Short before/after text change in one article
+    amendment_event_index: 0
+    expected_article_count: 1
+  - id: multi_article_amendment
+    description: Multiple articles modified in one amendment event
+    amendment_event_index: 1
+    expected_article_count_min: 2
+  - id: semantic_low_overlap
+    description: Low lexical overlap between rationale and affected article
+    amendment_event_index: 2
+    retrieval_challenge: semantic

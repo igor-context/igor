@@ -1,0 +1,19 @@
+schema_version: "0.1"
+semantic_definitions:
+  legal.amendment-taxonomy.v1:
+    definition_id: legal.amendment-taxonomy
+    revision: "1"
+    scope: legal amendment interpretation
+    description: Human-authored meanings and abstention rules for amendment relationships.
+    concepts:
+      - {id: insert, description: Adds text without replacing the existing provision.}
+      - {id: modify, description: Changes part of an existing provision.}
+      - {id: replace, description: Substitutes a provision with new text.}
+      - {id: repeal, description: Removes an existing provision.}
+      - {id: renumber, description: Changes structural numbering without changing meaning.}
+    rules:
+      abstain_when: [missing_before_or_after_text, missing_source_revision_time]
+      precedence: [official_source_revision, amendment_relationship, semantic_similarity]
+    coverage:
+      known_limitations: [English ReCaRe article-level amendment records]
+    display_name: Legal amendment taxonomy

@@ -1,0 +1,67 @@
+schema_version: "0.1"
+schemas:
+  legal.article.v1:
+    schema_version: "0.1"
+    schema_id: legal.article
+    revision: "1"
+    domain: legal
+    fields:
+      - {field_id: law_id, name: law_id, logical_type: string, required: true}
+      - {field_id: article_number, name: article_number, logical_type: string, required: true}
+      - {field_id: text, name: text, logical_type: text, required: true}
+      - {field_id: effective_from, name: effective_from, logical_type: timestamp, required: true}
+    json_schema:
+      type: object
+      additionalProperties: true
+      required: [law_id, article_number, text, effective_from]
+      properties:
+        law_id: {type: string}
+        article_number: {type: string}
+        text: {type: string}
+        effective_from: {type: string}
+  legal.embedding.v1:
+    schema_version: "0.1"
+    schema_id: legal.embedding
+    revision: "1"
+    domain: legal
+    fields:
+      - {field_id: vector, name: vector, logical_type: embedding, required: true}
+    json_schema:
+      type: object
+      additionalProperties: false
+      required: [vector]
+      properties:
+        vector: {type: array, items: {type: number}}
+  legal.enrichment.v1:
+    schema_version: "0.1"
+    schema_id: legal.enrichment
+    revision: "1"
+    domain: legal
+    fields:
+      - {field_id: amendment_action, name: amendment_action, logical_type: string, required: true}
+      - {field_id: rationale_summary, name: rationale_summary, logical_type: text, required: true}
+    json_schema:
+      type: object
+      additionalProperties: false
+      required: [amendment_action, affected_articles, rationale_summary, relationship_type]
+      properties:
+        amendment_action:
+          type: string
+          enum: [insert, modify, replace, repeal, renumber]
+          description: Legal change type.
+        affected_articles:
+          type: array
+          items: {type: string}
+          description: Article identifiers affected by the amendment.
+        rationale_summary:
+          type: string
+          maxLength: 240
+          description: One concise sentence summarizing the amendment rationale.
+        relationship_type:
+          type: string
+          enum: [amends, replaces, supplements, repeals]
+          description: Relationship between the source and the affected legal text.
+        evidence_spans:
+          type: array
+          items: {type: string}
+          description: Optional evidence excerpts supporting the enrichment.

@@ -1,0 +1,6 @@
+schema_version = 1
+name = "context-compiler"
+status = "active"
+capability = "IGOR-native semantic derivation, dependency invalidation, retrieval resolution, budgeting, and ContextPackage compilation"
+python_package = "igor_context_compiler"
+allowed_module_imports = ["core"]

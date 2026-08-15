@@ -1,0 +1,7 @@
+version: "1"
+matrix:
+  - {slice: table, pages: 1, questions: 2}
+  - {slice: form, pages: 1, questions: 2}
+  - {slice: figure, pages: 1, questions: 2}
+  - {slice: authority-time-conflict, pages: 1, questions: 2}
+constraints: {max_pages: 4, max_questions: 8, required_answerability: [answerable, abstain]}

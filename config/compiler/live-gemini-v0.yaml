@@ -1,0 +1,6 @@
+schema_version: "0.1"
+profile_id: live-gemini-context-v0
+prompt_version: enrichment-v1
+taxonomy_version: context-v1
+embedding_profile: ../providers/embeddings/voyage-multimodal-3.yaml
+completion_profile: ../providers/completions/gemini-3-1-flash-lite.yaml

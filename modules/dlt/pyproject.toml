@@ -1,0 +1,23 @@
+[build-system]
+requires = ["hatchling==1.29.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "igor-dlt"
+version = "0.1.0"
+description = "IGOR dlt ingestion owner"
+requires-python = ">=3.13,<3.14"
+dependencies = ["igor-core", "dlt[lance,s3]==1.29.0"]
+
+[dependency-groups]
+dev = ["pytest==9.1.1"]
+
+[tool.uv.sources]
+igor-core = { path = "../core" }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--strict-config --strict-markers"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/igor_dlt"]

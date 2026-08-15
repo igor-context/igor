@@ -1,0 +1,12 @@
+schema_version: "0.1"
+retrievals:
+  article_search:
+    search: vector
+    candidate_limit: 10
+    target_roles: [article_version]
+    eligibility:
+      valid_at_task_time: true
+    resolution:
+      policy: official_legal_source
+      accepted_outcomes: [selected]
+    display_name: Legal article semantic search

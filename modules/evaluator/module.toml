@@ -1,0 +1,6 @@
+schema_version = 1
+name = "evaluator"
+status = "active"
+capability = "Artifact-only core conformance, scenario quality scoring, and operational reporting"
+python_package = "igor_evaluator"
+allowed_module_imports = ["core"]

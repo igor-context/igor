@@ -1,0 +1,25 @@
+[build-system]
+requires = ["hatchling==1.29.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "igor-relational"
+version = "0.1.0"
+description = "IGOR-native relational model runner"
+requires-python = ">=3.13,<3.14"
+dependencies = ["igor-core", "igor-datafusion", "igor-lancedb"]
+
+[dependency-groups]
+dev = ["pytest==9.1.1"]
+
+[tool.uv.sources]
+igor-core = { path = "../core" }
+igor-datafusion = { path = "../datafusion" }
+igor-lancedb = { path = "../lancedb" }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--strict-config --strict-markers"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/igor_relational"]

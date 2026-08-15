@@ -1,0 +1,6 @@
+schema_version = 1
+name = "dbt-lance"
+status = "planned"
+capability = "Project-owned dbt adapter, relational models, materializations, lineage, rules, and data tests"
+python_package = "dbt.adapters.lance"
+allowed_module_imports = ["core", "datafusion", "lancedb"]

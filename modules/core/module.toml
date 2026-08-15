@@ -1,0 +1,6 @@
+schema_version = 1
+name = "core"
+status = "active"
+capability = "Benchmark contracts, reference-profile validation, canonical serialization, identity, hashing, and scoring primitives"
+python_package = "igor_core"
+allowed_module_imports = []

@@ -1,0 +1,118 @@
+{
+  "dataset_revision": "6281b8c718fa9f6a2ac44fda2498a92ccf47825b",
+  "source": "kasys/ReCaRe config=metadata-en split=metadata",
+  "fixture_note": "Text fields contain representative excerpts from EUR-Lex legislation accessed via the generic bounded Hugging Face row-selection adapter.",
+  "amendments": [
+    {
+      "amendment_law_id": "32013L0020",
+      "amendment_reason": "The proposal for a Council Directive adapting certain directives in the field of food safety, veterinary and phytosanitary policy is necessitated by the upcoming accession of the Republic of Croatia to the European Union. The Treaty of Accession of Croatia was signed on 9 December 2011. Article 50 of the Act of Accession provides that where acts of the institutions adopted before accession require adaptation by reason of accession, and the necessary adaptations have not been provided for in the Act of Accession or its Annexes, the Council shall adopt the necessary measures.",
+      "type_of_change": "potential_mod_-ct",
+      "law_id": "31964L0432",
+      "articles": [
+        {
+          "article_id_before": "31964L0432_20091218_0000000000_2",
+          "article_id_after": "31964L0432_20130701_32013L0020_2",
+          "article_number": "2",
+          "caption": "",
+          "text_before": "For the purposes of this Directive:\n(a) 'bovine animal' means any animal of the sub-family Bovinae;\n(b) 'swine' means any animal of the family Suidae;\n(p) 'region' means a part of the territory of a Member State which is not less than 2 000 km2 in area. A region must include at least one of the following administrative regions:\n— Belgium: province/provincie;\n— Bulgaria: област;\n— Czech Republic: kraj;\n— Denmark: region;\n— Germany: Regierungsbezirk;\n— Estonia: maakond;\n— Ireland: county/contae;\n— Greece: νομός;\n— Spain: provincia;\n— France: département;\n— Italy: provincia;\n— Cyprus: επαρχία;\n— Latvia: rajons;\n— Lithuania: apskritis;\n— Luxembourg: Luxembourg;\n— Hungary: megye;\n— Malta: Malta;\n— Netherlands: RVV-kring;\n— Austria: Bezirk;\n— Poland: powiat;\n— Portugal: distrito;\n— Romania: județ;\n— Slovenia: statistična regija;\n— Slovakia: kraj;\n— Finland: lääni/län;\n— Sweden: län;\n— United Kingdom: county/region.",
+          "text_after": "For the purposes of this Directive:\n(a) 'bovine animal' means any animal of the sub-family Bovinae;\n(b) 'swine' means any animal of the family Suidae;\n(p) 'region' means a part of the territory of a Member State which is not less than 2 000 km2 in area. A region must include at least one of the following administrative regions:\n— Belgium: province/provincie;\n— Bulgaria: област;\n— Czech Republic: kraj;\n— Croatia: županija;\n— Denmark: region;\n— Germany: Regierungsbezirk;\n— Estonia: maakond;\n— Ireland: county/contae;\n— Greece: νομός;\n— Spain: provincia;\n— France: département;\n— Italy: provincia;\n— Cyprus: επαρχία;\n— Latvia: rajons;\n— Lithuania: apskritis;\n— Luxembourg: Luxembourg;\n— Hungary: megye;\n— Malta: Malta;\n— Netherlands: RVV-kring;\n— Austria: Bezirk;\n— Poland: powiat;\n— Portugal: distrito;\n— Romania: județ;\n— Slovenia: statistična regija;\n— Slovakia: kraj;\n— Finland: lääni/län;\n— Sweden: län;\n— United Kingdom: county/region.",
+          "revision_id_before": "31964L0432_20091218_0000000000",
+          "revision_id_after": "31964L0432_20130701_32013L0020",
+          "row_number": 1
+        }
+      ]
+    },
+    {
+      "amendment_law_id": "32019R2175",
+      "amendment_reason": "Integrated financial markets bring significant benefits to the funding of the real economy. The development of a Capital Markets Union remains central to the objective of stimulating investment, new job creation and growth in the Union. The European Supervisory Authorities (ESAs) play a crucial role in maintaining a healthy functioning of financial markets. It is therefore essential to adjust and upgrade the ESAs framework by enhancing the powers, the governance and the funding of those Authorities.",
+      "type_of_change": "mod_--t",
+      "law_id": "32010R1095",
+      "articles": [
+        {
+          "article_id_before": "32010R1095_20140523_0000000000_15",
+          "article_id_after": "32010R1095_20200101_32019R2175_15",
+          "article_number": "15",
+          "caption": "Implementing technical standards",
+          "text_before": "1. The Authority may develop implementing technical standards, by means of implementing acts under Article 291 TFEU, in the areas specifically set out in the legislative acts referred to in Article 1(2).",
+          "text_after": "1. Where the European Parliament and the Council confer power on the Commission to adopt implementing technical standards by means of implementing acts under Article 291 TFEU, the Authority may develop draft implementing technical standards.",
+          "revision_id_before": "32010R1095_20140523_0000000000",
+          "revision_id_after": "32010R1095_20200101_32019R2175",
+          "row_number": 10001
+        },
+        {
+          "article_id_before": "32010R1095_20140523_0000000000_16",
+          "article_id_after": "32010R1095_20200101_32019R2175_16",
+          "article_number": "16",
+          "caption": "Guidelines and recommendations",
+          "text_before": "1. The Authority shall, with a view to establishing consistent, efficient and effective supervisory practices within the ESFS, and to ensuring the common, uniform and consistent application of Union law, issue guidelines and recommendations addressed to competent authorities or financial market participants.",
+          "text_after": "1. The Authority shall, with a view to establishing consistent, efficient and effective supervisory practices within the ESFS, and to ensuring the common, uniform and consistent application of Union law, issue guidelines addressed to all competent authorities or all financial market participants and recommendations addressed to one or more competent authorities or one or more financial market participants.",
+          "revision_id_before": "32010R1095_20140523_0000000000",
+          "revision_id_after": "32010R1095_20200101_32019R2175",
+          "row_number": 10002
+        },
+        {
+          "article_id_before": "32010R1095_20140523_0000000000_17",
+          "article_id_after": "32010R1095_20200101_32019R2175_17",
+          "article_number": "17",
+          "caption": "Breach of Union law",
+          "text_before": "1. Where a competent authority has not applied the acts referred to in Article 1(2), or has applied them in a way which appears to be a breach of Union law, including the regulatory technical standards and implementing technical standards established in accordance with Articles 10 to 15, in particular by failing to ensure that a financial market participant satisfies the requirements laid down in those acts, the Authority shall act in accordance with the powers set out in paragraphs 2, 3 and 6 of this Article.",
+          "text_after": "1. Where a competent authority has not applied the acts referred to in Article 1(2), or has applied them in a way which appears to be a breach of Union law, including the regulatory technical standards and implementing technical standards established in accordance with Articles 10 to 15, in particular by failing to ensure that a financial market participant or a market operator satisfies the requirements laid down in those acts, the Authority shall act in accordance with the powers set out in paragraphs 2, 3 and 6 of this Article.",
+          "revision_id_before": "32010R1095_20140523_0000000000",
+          "revision_id_after": "32010R1095_20200101_32019R2175",
+          "row_number": 10003
+        }
+      ]
+    },
+    {
+      "amendment_law_id": "32018L0645",
+      "amendment_reason": "Directive 2003/59/EC of the European Parliament and of the Council lays down the initial qualification and periodic training requirements for drivers of certain road vehicles for the carriage of goods or passengers. In view of the developments in training and education, and in order to further enhance road safety and the relevance of the training for drivers, it is necessary to revise the initial qualification and periodic training provisions.",
+      "type_of_change": "mod_--t",
+      "law_id": "32006L0126",
+      "articles": [
+        {
+          "article_id_before": "32006L0126_20130119_0000000000_4",
+          "article_id_after": "32006L0126_20200523_32018L0645_4",
+          "article_number": "4",
+          "caption": "Categories, definitions and minimum ages",
+          "text_before": "1. The driving licence provided for in Article 1 shall authorise the driving of power-driven vehicles in the categories defined hereunder. It may be issued from the minimum age indicated for each category. A 'power-driven vehicle' means any self-propelled vehicle running on a road under its own power, other than a rail-borne vehicle.\n(a) Category AM: two-wheel or three-wheel vehicles with a maximum design speed of not more than 45 km/h, and light quadricycles;\n(b) Category A1: motorcycles with a cylinder capacity not exceeding 125 cm3, of a power not exceeding 11 kW and with a power/weight ratio not exceeding 0,1 kW/kg;\n(c) Category A2: motorcycles of a power not exceeding 35 kW and with a power/weight ratio not exceeding 0,2 kW/kg;\n(d) Category A: motorcycles;\n(e) Category B: motor vehicles with a maximum authorised mass not exceeding 3 500 kg and designed and constructed for the carriage of no more than eight passengers in addition to the driver;\n(f) Category BE: combinations of vehicles where the tractor vehicle is in category B and the trailer has a maximum authorised mass not exceeding 3 500 kg;\n(g) Category C1: motor vehicles other than those in categories D1 or D, the maximum authorised mass of which exceeds 3 500 kg but not more than 7 500 kg;\n(h) Category C1E: without prejudice to type-approval rules for the vehicles concerned, combinations of vehicles where the tractor vehicle is in category C1;\n(i) Category C: motor vehicles other than those in categories D1 or D, the maximum authorised mass of which exceeds 3 500 kg;\n(j) Category CE: without prejudice to type-approval rules for the vehicles concerned, combinations of vehicles where the tractor vehicle is in category C;\n(k) Category D1: motor vehicles designed and constructed for the carriage of no more than 16 passengers in addition to the driver and with a maximum length not exceeding 8 m;\n(l) Category D1E: without prejudice to type-approval rules for the vehicles concerned, combinations of vehicles where the tractor vehicle is in category D1;\n(m) Category D: motor vehicles designed and constructed for the carriage of more than eight passengers in addition to the driver;\n(n) Category DE: without prejudice to type-approval rules for the vehicles concerned, combinations of vehicles where the tractor vehicle is in category D.",
+          "text_after": "1. The driving licence provided for in Article 1 shall authorise the driving of power-driven vehicles in the categories defined hereunder. It may be issued from the minimum age indicated for each category. A 'power-driven vehicle' means any self-propelled vehicle running on a road under its own power, other than a rail-borne vehicle.\n(a) Category AM: two-wheel or three-wheel vehicles with a maximum design speed of not more than 45 km/h, and light quadricycles;\n(b) Category A1: motorcycles with a cylinder capacity not exceeding 125 cm3, of a power not exceeding 11 kW and with a power/weight ratio not exceeding 0,1 kW/kg;\n(c) Category A2: motorcycles of a power not exceeding 35 kW and with a power/weight ratio not exceeding 0,2 kW/kg;\n(d) Category A: motorcycles;\n(e) Category B: motor vehicles with a maximum authorised mass not exceeding 3 500 kg and designed and constructed for the carriage of no more than eight passengers in addition to the driver;\n(f) Category BE: combinations of vehicles where the tractor vehicle is in category B and the trailer has a maximum authorised mass not exceeding 3 500 kg;\n(g) Category C1: motor vehicles other than those in categories D1 or D, the maximum authorised mass of which exceeds 3 500 kg but not more than 7 500 kg;\n(h) Category C1E: without prejudice to type-approval rules for the vehicles concerned, combinations of vehicles where the tractor vehicle is in category C1;\n(i) Category C: motor vehicles other than those in categories D1 or D, the maximum authorised mass of which exceeds 3 500 kg;\n(j) Category CE: without prejudice to type-approval rules for the vehicles concerned, combinations of vehicles where the tractor vehicle is in category C;\n(k) Category D1: motor vehicles designed and constructed for the carriage of no more than 16 passengers in addition to the driver and with a maximum length not exceeding 8 m;\n(l) Category D1E: without prejudice to type-approval rules for the vehicles concerned, combinations of vehicles where the tractor vehicle is in category D1;\n(m) Category D: motor vehicles designed and constructed for the carriage of more than eight passengers in addition to the driver;\n(n) Category DE: without prejudice to type-approval rules for the vehicles concerned, combinations of vehicles where the tractor vehicle is in category D.\n7. A Member State may set a lower minimum age for the categories referred to in the first subparagraph to apply within its territory for drivers holding a certificate of professional competence as referred to in Directive 2003/59/EC.",
+          "revision_id_before": "32006L0126_20130119_0000000000",
+          "revision_id_after": "32006L0126_20200523_32018L0645",
+          "row_number": 5016
+        }
+      ]
+    }
+  ],
+  "negative_articles": [
+    {
+      "article_id": "31964L0432_20091218_0000000000_1",
+      "article_number": "1",
+      "law_id": "31964L0432",
+      "text": "This Directive shall apply to intra-Community trade in bovine animals and swine.",
+      "revision_id": "31964L0432_20091218_0000000000",
+      "row_number": 0,
+      "negative_for": "32013L0020",
+      "reason": "Same law but not affected by the Croatia accession amendment"
+    },
+    {
+      "article_id": "32010R1095_20140523_0000000000_20",
+      "article_number": "20",
+      "law_id": "32010R1095",
+      "text": "In the cases referred to in Article 18, the Authority may temporarily prohibit or restrict certain financial activities that threaten the orderly functioning and integrity of financial markets.",
+      "revision_id": "32010R1095_20140523_0000000000",
+      "row_number": 10006,
+      "negative_for": "32019R2175",
+      "reason": "Same law (ESMA Regulation) but Article 20 was not modified by this amendment event"
+    },
+    {
+      "article_id": "32006L0126_20130119_0000000000_3",
+      "article_number": "3",
+      "law_id": "32006L0126",
+      "text": "1. No driving licence shall be issued to any person who does not satisfy the conditions laid down in Articles 7 and 8. 2. Member States shall take the necessary steps to ensure that driving licences conform to the model set out in Annex I.",
+      "revision_id": "32006L0126_20130119_0000000000",
+      "row_number": 5015,
+      "negative_for": "32018L0645",
+      "reason": "Same law (Driving Licence Directive) but Article 3 was not modified by this amendment"
+    }
+  ]
+}

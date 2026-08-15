@@ -1,0 +1,17 @@
+{
+  "schema_version": "0.1",
+  "run_identity": "sha256:3b8e84ca569c5b605ded3c53a714c7fd114819ec09c0d4b56db2e63f204d3328",
+  "artifacts": [
+    {
+      "schema_version": "0.1",
+      "path": "artifacts/placeholder.json",
+      "producer": {
+        "name": "example-implementation",
+        "revision": "example-1"
+      },
+      "media_type": "application/json",
+      "sha256": "sha256:ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+      "size_bytes": 3
+    }
+  ]
+}

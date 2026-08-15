@@ -1,0 +1,6 @@
+schema_version = 1
+name = "runner"
+status = "active"
+capability = "Reference-stage composition, ordering, configuration slicing, and run-artifact assembly"
+python_package = "igor_runner"
+allowed_module_imports = ["core", "fixtures", "dlt", "lancedb", "datafusion", "relational", "context-compiler"]

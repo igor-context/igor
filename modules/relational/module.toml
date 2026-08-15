@@ -1,0 +1,6 @@
+schema_version = 1
+name = "relational"
+status = "active"
+capability = "Declarative relational models, materialization, lineage, and data tests over DataFusion and Lance"
+python_package = "igor_relational"
+allowed_module_imports = ["core", "datafusion", "lancedb"]

@@ -1,0 +1,6 @@
+schema_version: "0.1"
+profile_id: local-deterministic-v0
+prompt_version: scaffold-v1
+taxonomy_version: scaffold-v1
+embedding_profile: providers/embeddings/deterministic-hash.yaml
+completion_profile: providers/completions/deterministic-fixture.yaml

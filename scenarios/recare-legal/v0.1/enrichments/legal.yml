@@ -1,0 +1,12 @@
+schema_version: "0.1"
+recipes:
+  legal.amendment-recipe.v1:
+    recipe_id: legal.amendment-recipe
+    revision: "1"
+    accepted_representation_types: [text]
+    accepted_media_types: [text/plain]
+    output_schema: legal.enrichment.v1
+    prompt_version: "1"
+    taxonomy_version: "1"
+    evidence_required: true
+    abstention_allowed: true

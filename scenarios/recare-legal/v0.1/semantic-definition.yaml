@@ -1,0 +1,42 @@
+semantic_definition_id: recare.legal.amendment
+revision: "1"
+title: Legal amendment enrichment
+taxonomy:
+  amendment_action:
+    description: Type of legal modification
+    values: [insert, modify, replace, repeal, renumber]
+  affected_scope:
+    description: Scope of articles affected
+    values: [single_article, multiple_articles, entire_chapter, entire_law]
+enrichment_schema:
+  type: object
+  properties:
+    amendment_action:
+      type: string
+      enum: [insert, modify, replace, repeal, renumber]
+      description: Legal change type.
+    affected_articles:
+      type: array
+      items: { type: string }
+      description: Article identifiers affected by the amendment.
+    rationale_summary:
+      type: string
+      maxLength: 240
+      description: One concise sentence summarizing the amendment rationale.
+    before_summary:
+      type: string
+      maxLength: 240
+      description: Optional brief summary of the prior state.
+    after_summary:
+      type: string
+      maxLength: 240
+      description: Optional brief summary of the updated state.
+    relationship_type:
+      type: string
+      enum: [amends, replaces, supplements, repeals]
+      description: Relationship between the source and the affected legal text.
+    evidence_spans:
+      type: array
+      items: { type: string }
+      description: Optional evidence excerpts supporting the enrichment.
+  required: [amendment_action, affected_articles, rationale_summary, relationship_type]

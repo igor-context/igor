@@ -1,0 +1,10 @@
+*
+!pyproject.toml
+!uv.lock
+!Dockerfile.lock
+!src/
+!src/**
+!tests/
+!tests/**
+!examples/
+!examples/**

@@ -1,0 +1,60 @@
+schema_version: "0.1"
+source_contracts:
+  legal.amendments.v1:
+    contract_id: legal.amendments
+    revision: "1"
+    domain: legal
+    resources:
+      - resource_id: amendment_articles
+        resource_kind: versioned_legal_article
+        identity_concepts: [amendment_law_id, article_id_after]
+        fields:
+          - {concept_id: amendment_law_id, logical_type: string, required: true}
+          - {concept_id: amendment_reason, logical_type: text, required: true}
+          - {concept_id: law_id, logical_type: string, required: true}
+          - {concept_id: type_of_change, logical_type: string, required: true}
+          - {concept_id: revision_id_before, logical_type: string, required: true}
+          - {concept_id: article_id_before, logical_type: string, required: true}
+          - {concept_id: article_number_before, logical_type: string, required: true}
+          - {concept_id: caption_before, logical_type: string, required: false}
+          - {concept_id: text_before, logical_type: text, required: true}
+          - {concept_id: revision_id_after, logical_type: string, required: true}
+          - {concept_id: article_id_after, logical_type: string, required: true}
+          - {concept_id: article_number_after, logical_type: string, required: true}
+          - {concept_id: caption_after, logical_type: string, required: false}
+          - {concept_id: text_after, logical_type: text, required: true}
+        accepted_media_types: [text/plain]
+        change_mode: cdc
+        cursor_concept: revision_id_after
+        deletion_semantics: tombstone
+connector_bindings:
+  huggingface.recare.v1:
+    binding_id: huggingface.recare
+    revision: "1"
+    source_contract_ref: legal.amendments.v1
+    connector: huggingface-rows
+    deployment_ref: kasys/ReCaRe@6281b8c718fa9f6a2ac44fda2498a92ccf47825b
+    resources:
+      - resource_id: amendment_articles
+        source_resource: metadata-en/metadata
+        cursor_field: revision_id_after
+        fields:
+          - {concept_id: amendment_law_id, source_field: amendment_law_id}
+          - {concept_id: amendment_reason, source_field: amendment_reason}
+          - {concept_id: law_id, source_field: law_id}
+          - {concept_id: type_of_change, source_field: type_of_change}
+          - {concept_id: revision_id_before, source_field: revision_id_before}
+          - {concept_id: article_id_before, source_field: article_id_before}
+          - {concept_id: article_number_before, source_field: article_number_before}
+          - {concept_id: caption_before, source_field: caption_before}
+          - {concept_id: text_before, source_field: text_before}
+          - {concept_id: revision_id_after, source_field: revision_id_after}
+          - {concept_id: article_id_after, source_field: article_id_after}
+          - {concept_id: article_number_after, source_field: article_number_after}
+          - {concept_id: caption_after, source_field: caption_after}
+          - {concept_id: text_after, source_field: text_after}
+sources:
+  legal_amendments:
+    source_contract: legal.amendments.v1
+    connector_binding: huggingface.recare.v1
+    identity_fields: [amendment_law_id, article_id_after]

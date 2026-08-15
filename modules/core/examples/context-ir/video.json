@@ -1,0 +1,17 @@
+{
+  "ir_version": "0.1",
+  "task_id": "video-event-review",
+  "schema_revision": "media.video-events.v1",
+  "items": [
+    {
+      "representation_identity": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+      "evidence_identities": [],
+      "role": "temporal-event",
+      "rank": 0,
+      "token_estimate": 72
+    }
+  ],
+  "budget_tokens": 256,
+  "created_at": "2026-08-12T00:00:00Z",
+  "metadata": {"domain": "video"}
+}

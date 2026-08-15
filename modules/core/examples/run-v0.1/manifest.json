@@ -1,0 +1,16 @@
+{
+  "schema_version": "0.1",
+  "identity_links": {
+    "benchmark_contract": "igor-benchmark-contract:0.1",
+    "scenario_pack": "support:0.1",
+    "scorecard": "support-scorecard:0.1",
+    "implementation": "example-implementation:0.1",
+    "source_fixture": "support-fixture:0.1",
+    "transformation_config": "deterministic:0.1",
+    "evaluator": "igor-evaluator:0.1"
+  },
+  "artifact_index_path": "artifact-index.json",
+  "stage_result_paths": [
+    "stages/prepare.json"
+  ]
+}

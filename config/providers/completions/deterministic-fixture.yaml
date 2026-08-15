@@ -1,0 +1,7 @@
+schema_version: "0.1"
+profile_id: deterministic-fixture-v0
+capability: completion
+provider: deterministic
+model: fixture-enricher
+revision: "1"
+parameters: {}

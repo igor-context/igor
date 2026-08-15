@@ -1,0 +1,13 @@
+# Generated runtime, benchmark, and evaluation state
+/.igor/
+
+# Container-managed language state
+**/.venv/
+**/__pycache__/
+**/.pytest_cache/
+
+# Context Compiler runtime credentials and provider endpoints
+/modules/context-compiler/.env
+
+# OS
+**/.DS_Store

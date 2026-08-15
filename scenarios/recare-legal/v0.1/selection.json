@@ -1,0 +1,43 @@
+{
+  "repository": "kasys/ReCaRe",
+  "revision": "6281b8c718fa9f6a2ac44fda2498a92ccf47825b",
+  "config": "metadata-en",
+  "split": "metadata",
+  "license": "cc-by-4.0",
+  "max_bytes": 10485760,
+  "max_rows": 100,
+  "row_numbers": [
+    1,
+    5016,
+    10001,
+    10002,
+    10003,
+    10004,
+    10005,
+    10007
+  ],
+  "selector_field": "amendment_law_id",
+  "selector_values": [
+    "32013L0020",
+    "32019R2175",
+    "32018L0645"
+  ],
+  "fields": [
+    "amendment_law_id",
+    "amendment_reason",
+    "law_id",
+    "type_of_change",
+    "law_title_before",
+    "revision_id_before",
+    "article_id_before",
+    "article_number_before",
+    "caption_before",
+    "text_before",
+    "law_title_after",
+    "revision_id_after",
+    "article_id_after",
+    "article_number_after",
+    "caption_after",
+    "text_after"
+  ]
+}

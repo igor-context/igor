@@ -1,0 +1,22 @@
+schema_version: "0.1"
+context_contracts:
+  legal.research-agent.v1:
+    contract_id: legal.research-agent
+    version: "1"
+    permitted_consumers: [legal-analysis-agent]
+    permitted_tasks: [article-amendment-analysis, legislative-history-query]
+    permitted_purposes: [legal-research, amendment-impact-analysis]
+    allowed_modalities: [text]
+    required_authority_level: source-authoritative
+    historical_evidence_allowed: true
+    allowed_as_of_max_age_days: 36500
+    budgets:
+      max_package_items: 20
+      max_tokens: 10000
+      max_bytes: 1000000
+    freshness_hours: 0
+    citations_required: true
+    abstain_conditions: [missing_authoritative_evidence, missing_source_revision_time]
+    prohibited_uses: [legal-advice, court-submission, regulatory-filing]
+    title: Legal research Context Contract
+    description: Governs task-specific publication of authoritative legal article versions.

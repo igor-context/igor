@@ -1,0 +1,21 @@
+schema_version: "0.1"
+authority_policies:
+  legal.official-source-policy.v1:
+    policy_id: legal.official-source-policy
+    revision: "1"
+    required_authority_level: source-authoritative
+    historical_evidence_allowed: true
+    freshness_hours: 0
+    allowed_as_of_max_age_days: 36500
+    conflict_behavior: abstain
+    prohibited_sources: []
+    description: Select an official source version only when its effective interval contains as_of.
+authority:
+  official_legal_source:
+    target: article_version
+    policy: legal.official-source-policy.v1
+    policy_id: legal.official-source-policy
+    policy_revision: "1"
+    accepted_outcomes: [selected]
+    active_only: false
+    valid_at_task_time: true

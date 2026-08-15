@@ -1,0 +1,14 @@
+schema_version: "0.1"
+profile_id: deepseek-v4-flash-v0
+capability: completion
+provider: deepseek
+model: deepseek-chat
+revision: deepseek-chat-live-2026-08-13
+parameters:
+  endpoint: https://api.deepseek.com
+  temperature: 0
+  response_format: json_object
+  supported_content_kinds: [text, image, document]
+  max_concurrency: 16
+  retry_attempts: 3
+  retry_backoff_seconds: 0.5

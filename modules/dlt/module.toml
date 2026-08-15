@@ -1,0 +1,6 @@
+schema_version = 1
+name = "dlt"
+status = "active"
+capability = "Source ingestion, normalization, merge keys, and load state through dlt's Lance destination"
+python_package = "igor_dlt"
+allowed_module_imports = ["core"]

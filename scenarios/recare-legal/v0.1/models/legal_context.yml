@@ -1,0 +1,60 @@
+schema_version: "0.1"
+context_model:
+  id: recare.legal.context
+  revision: "1"
+  title: ReCaRe authoritative legal context
+objects:
+  amendment_article:
+    kind: business_object
+    source: legal_amendments
+    display_name: "{{ law_id }} Article {{ article_number }}"
+  article_snapshot:
+    kind: source_snapshot
+    source: legal_amendments
+    display_name: "{{ law_id }} Article {{ article_number }} at {{ effective_from }}"
+  article_version:
+    kind: semantic_derivation
+    derived_from: [article_snapshot]
+    operation: representation.legal-article.v1
+    schema: legal.article.v1
+    display_name: Legal article version
+  article_embedding:
+    kind: retrieval_projection
+    derived_from: [article_version]
+    operation: embedding.text.v1
+    schema: legal.embedding.v1
+    model_profile: legal.text.embedding.v1
+    display_name: Legal article embedding
+  amendment_enrichment:
+    kind: semantic_derivation
+    derived_from: [article_version]
+    operation: enrichment.legal-amendment.v1
+    schema: legal.enrichment.v1
+    semantic_definition: legal.amendment-taxonomy.v1
+    recipe: legal.amendment-recipe.v1
+    model_profile: legal.text.completion.v1
+    display_name: Legal amendment enrichment
+presentation:
+  article_version:
+    preview_fields: [law_id, article_number, caption, text]
+    display_name: Article version
+tests:
+  - identity_unique: amendment_article
+  - snapshot_integrity: article_snapshot
+  - evidence_required: article_version
+  - lineage_complete: article_version
+  - no_orphan_outputs: {}
+uses:
+  sources: [legal_amendments]
+  authority: [official_legal_source]
+  retrievals: [article_search]
+  outputs: [legal_context_delivery]
+  contracts: [legal.research-agent.v1]
+  evaluations:
+    - retrieval.relevance
+    - authority.selection
+    - temporal.state
+    - contract.behavior
+    - package.quality
+    - lineage.completeness
+    - operational.accounting

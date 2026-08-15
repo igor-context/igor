@@ -1,0 +1,13 @@
+{
+  "schema_version": "0.1",
+  "stage_id": "prepare",
+  "status": "succeeded",
+  "producer": {
+    "name": "example-implementation",
+    "revision": "example-1"
+  },
+  "input_artifact_identities": [],
+  "output_artifact_identities": [
+    "sha256:aa16ff0eb9a309d8c0e019566c7e53142b12bbf1fc98f63a4e94676260989b2e"
+  ]
+}

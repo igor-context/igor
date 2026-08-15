@@ -1,0 +1,6 @@
+schema_version = 1
+name = "lancedb"
+status = "active"
+capability = "Operational Lance relations, vector indexes, retrieval, and storage adapters"
+python_package = "igor_lancedb"
+allowed_module_imports = ["core"]

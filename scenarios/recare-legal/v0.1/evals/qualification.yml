@@ -1,0 +1,40 @@
+schema_version: "0.1"
+evaluations:
+  retrieval.relevance:
+    category: retrieval
+    description: Verify native semantic retrieval and the low-overlap case.
+    target_roles: [article_version]
+    target_retrievals: [article_search]
+    checks: [semantic_retrieval_relevance, native_ann_plan]
+  authority.selection:
+    category: authority
+    description: Verify official-source selection and superseded exclusion.
+    target_roles: [article_version]
+    checks: [authority_selection, superseded_exclusion]
+  temporal.state:
+    category: temporal
+    description: Verify current, historical, and unknown temporal states.
+    target_roles: [article_version]
+    checks: [current_state, historical_state, unknown_time_state]
+  contract.behavior:
+    category: contract
+    description: Verify allow, deny, and abstain package behavior.
+    target_contracts: [legal.research-agent.v1]
+    target_outputs: [legal_context_delivery]
+    checks: [allow_behavior, deny_behavior, abstain_behavior]
+  package.quality:
+    category: package
+    description: Verify evidence, citations, and package budgets.
+    target_outputs: [legal_context_delivery]
+    checks: [package_contents, citation_requirement, budget_limits]
+  lineage.completeness:
+    category: lineage
+    description: Verify readable lineage and mutation invalidation.
+    target_roles: [article_version]
+    checks: [lineage_completeness, readable_names, mutation_invalidation]
+  operational.accounting:
+    category: operational
+    description: Verify bounded provider and runtime accounting.
+    target_outputs: [legal_context_delivery]
+    checks: [request_accounting, latency_accounting, cache_isolation]
+    hidden_expectations: false

@@ -1,0 +1,8 @@
+schema_version: "0.1"
+project:
+  name: recare-authoritative-context
+  version: "1"
+  project_version: "0.1"
+  qualification_mode: development
+  default_context_model: recare.legal.context
+  compatibility: ["0.1"]

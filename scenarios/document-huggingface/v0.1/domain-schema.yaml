@@ -1,0 +1,37 @@
+schema_id: document.page
+revision: "3"
+context_model_id: document.qa.v1
+source_dataset:
+  repository: lance-format/docvqa-lance
+  pinned_revision: 43245f42abf5a2e7acd68617061497f3bb67048c
+  split: validation
+  fields:
+    - {name: id, type: int64, description: "Row index within the split; source natural join key.", use: acquisition_identity}
+    - {name: image, type: large_binary, description: "Inline JPEG bytes for the complete document page.", use: original_verified_content}
+    - {name: image_id, type: nullable_string, description: "DocVQA docId alias; identifies the page image.", use: source_identity}
+    - {name: question_id, type: nullable_string, description: "Stable DocVQA question identifier.", use: task_identity}
+    - {name: question, type: string, description: "Natural-language question to answer from the associated page image.", use: task_input}
+    - {name: answers, type: list_string, description: "Human reference answer spans used only by independent evaluation.", use: evaluation_only, prompt_allowed: false}
+    - {name: answer, type: string, description: "First reference answer, retained only for independent evaluation and source FTS.", use: evaluation_only, prompt_allowed: false}
+    - {name: doc_id, type: nullable_string, description: "DocVQA document identifier.", use: document_identity}
+    - {name: ucsf_document_id, type: nullable_string, description: "UCSF Industry Documents Library provenance identifier.", use: source_provenance}
+    - {name: ucsf_document_page_no, type: nullable_string, description: "Page number within the source document.", use: evidence_locator}
+    - {name: data_split, type: nullable_string, description: "Original source split label.", use: acquisition_provenance}
+    - {name: question_types, type: list_string, description: "DocVQA structural or visual tags describing the evidence needed by the question.", use: task_guidance}
+    - {name: image_emb, type: fixed_float32_512, description: "Supplied normalized CLIP image embedding.", use: excluded_supplied_derivation, prompt_allowed: false}
+    - {name: question_emb, type: fixed_float32_512, description: "Supplied normalized CLIP question embedding.", use: excluded_supplied_derivation, prompt_allowed: false}
+representations:
+  source: original_verified_content
+  task: question_text
+  rule: "Send original content directly only to a completion profile qualified for its modality."
+fields:
+  - {name: document_id, type: string, required: true, description: "Normalized source document identity."}
+  - {name: page_id, type: string, required: true, description: "Stable identity of the page used as answer evidence."}
+  - {name: page_number, type: integer, required: true, description: "Page position within the source document."}
+  - {name: revision, type: string, required: true, description: "Pinned source-content revision."}
+  - {name: observed_at, type: datetime, required: true, description: "UTC instant when IGOR observed this page."}
+  - {name: effective_from, type: datetime, required: true, description: "UTC instant from which the page is valid for resolution."}
+  - {name: authority, type: string, required: true, description: "Domain authority classification supplied to resolution."}
+  - {name: content_ref, type: uri, required: true, description: "Opaque reference to the verified original page bytes."}
+  - {name: content_sha256, type: sha256, required: true, description: "Integrity hash of the original page bytes."}
+  - {name: media_type, type: media-type, required: true, description: "Media type of the original page content."}

@@ -1,0 +1,8 @@
+schema_version: "0.1"
+profile_id: deterministic-hash-v0
+capability: embedding
+provider: deterministic
+model: hash-embedding
+revision: "1"
+parameters:
+  dimensions: 8

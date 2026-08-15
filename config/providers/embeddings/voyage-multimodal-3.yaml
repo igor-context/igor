@@ -1,0 +1,14 @@
+schema_version: "0.1"
+profile_id: voyage-multimodal-3-v0
+capability: embedding
+provider: voyage
+model: voyage-multimodal-3
+revision: api-alias-selected-2026-08-13
+parameters:
+  endpoint: https://api.voyageai.com/v1/multimodalembeddings
+  dimensions: 1024
+  request_chunk_size: 32
+  request_pause_seconds: 0
+  max_concurrency: 16
+  retry_attempts: 3
+  retry_backoff_seconds: 0.5

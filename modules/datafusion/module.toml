@@ -1,0 +1,6 @@
+schema_version = 1
+name = "datafusion"
+status = "active"
+capability = "Analytical SQL execution over Lance relations"
+python_package = "igor_datafusion"
+allowed_module_imports = ["core", "lancedb"]

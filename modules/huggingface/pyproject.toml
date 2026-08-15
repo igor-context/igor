@@ -1,0 +1,23 @@
+[build-system]
+requires = ["hatchling==1.29.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "igor-huggingface"
+version = "0.1.0"
+description = "IGOR pinned Hugging Face acquisition adapter"
+requires-python = ">=3.13,<3.14"
+dependencies = []
+
+[project.scripts]
+igor-huggingface = "igor_huggingface.cli:main"
+
+[dependency-groups]
+dev = ["pytest==9.1.1"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--strict-config --strict-markers"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/igor_huggingface"]

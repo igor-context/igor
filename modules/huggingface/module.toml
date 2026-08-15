@@ -1,0 +1,6 @@
+schema_version = 1
+name = "huggingface"
+status = "active"
+capability = "Pinned Hugging Face dataset discovery, bounded acquisition, and content identity verification"
+python_package = "igor_huggingface"
+allowed_module_imports = ["core"]

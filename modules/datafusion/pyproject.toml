@@ -1,0 +1,24 @@
+[build-system]
+requires = ["hatchling==1.29.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "igor-datafusion"
+version = "0.1.0"
+description = "IGOR DataFusion analytical owner"
+requires-python = ">=3.13,<3.14"
+dependencies = ["igor-core", "igor-lancedb", "datafusion==54.0.0"]
+
+[dependency-groups]
+dev = ["pytest==9.1.1"]
+
+[tool.uv.sources]
+igor-core = { path = "../core" }
+igor-lancedb = { path = "../lancedb" }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--strict-config --strict-markers"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/igor_datafusion"]

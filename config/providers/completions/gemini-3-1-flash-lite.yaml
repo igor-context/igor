@@ -1,0 +1,12 @@
+schema_version: "0.1"
+profile_id: gemini-3-1-flash-lite-v0
+capability: completion
+provider: gemini
+model: gemini-3.1-flash-lite
+revision: api-model-selected-2026-08-13
+parameters:
+  endpoint: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent
+  supported_content_kinds: [text, image, document]
+  max_concurrency: 4
+  retry_attempts: 3
+  retry_backoff_seconds: 1.0

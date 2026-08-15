@@ -1,0 +1,15 @@
+schema_version: "0.1"
+profile_id: ministral-3-8b-document-qna-v0
+capability: completion
+provider: mistral
+model: ministral-8b-2512
+revision: ministral-3-8b-2025-12
+parameters:
+  endpoint: https://api.mistral.ai/v1/chat/completions
+  workload: document_qna
+  temperature: 0
+  response_format: json_object
+  supported_content_kinds: [text, document]
+  max_concurrency: 1
+  retry_attempts: 3
+  retry_backoff_seconds: 1.0
