@@ -101,6 +101,13 @@ Each module owns one capability and only imports the modules it declares in its
 together for a given scenario. No module imports outside its declared dependencies —
 `harnesses/architecture` enforces this on every change.
 
+**Current reference-stack defaults** (all replaceable via `config/providers/*.yaml`,
+none required by the architecture): [LanceDB](https://lancedb.com) for vector storage,
+[Apache DataFusion](https://datafusion.apache.org) for analytical SQL,
+[dlt](https://dlthub.com) for ingestion, [Voyage AI](https://www.voyageai.com) for
+embeddings, and [Mistral](https://mistral.ai) / [DeepSeek](https://www.deepseek.com)
+for completions.
+
 ## Specification
 
 The normative contracts IGOR implements — identity, lineage, temporal resolution,
