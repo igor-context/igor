@@ -1,0 +1,29 @@
+schema_version: "0.1"
+authority_policies:
+  clinical.official-source-policy.v1:
+    policy_id: clinical.official-source-policy
+    revision: "1"
+    required_authority_level: source-authoritative
+    historical_evidence_allowed: true
+    freshness_hours: 0
+    allowed_as_of_max_age_days: 36500
+    conflict_behavior: abstain
+    prohibited_sources: []
+    description: Select a PubMed Central-sourced clinical case/image version only when its effective interval contains as_of; publications are treated as source-authoritative.
+authority:
+  official_case_source:
+    target: case_version
+    policy: clinical.official-source-policy.v1
+    policy_id: clinical.official-source-policy
+    policy_revision: "1"
+    accepted_outcomes: [selected]
+    active_only: false
+    valid_at_task_time: true
+  official_image_source:
+    target: image_version
+    policy: clinical.official-source-policy.v1
+    policy_id: clinical.official-source-policy
+    policy_revision: "1"
+    accepted_outcomes: [selected]
+    active_only: false
+    valid_at_task_time: true

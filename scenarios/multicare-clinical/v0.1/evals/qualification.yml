@@ -1,0 +1,40 @@
+schema_version: "0.1"
+evaluations:
+  retrieval.relevance:
+    category: retrieval
+    description: Verify native multimodal semantic retrieval and the low-overlap case.
+    target_roles: [case_version, image_version]
+    target_retrievals: [case_search]
+    checks: [semantic_retrieval_relevance, native_ann_plan]
+  authority.selection:
+    category: authority
+    description: Verify official-source selection for both case and image versions.
+    target_roles: [case_version, image_version]
+    checks: [authority_selection, superseded_exclusion]
+  temporal.state:
+    category: temporal
+    description: Verify current, historical, and unknown temporal states.
+    target_roles: [case_version, image_version]
+    checks: [current_state, historical_state, unknown_time_state]
+  contract.behavior:
+    category: contract
+    description: Verify allow, deny, and abstain package behavior.
+    target_contracts: [clinical.clinical-agent.v1]
+    target_outputs: [clinical_context_delivery]
+    checks: [allow_behavior, deny_behavior, abstain_behavior]
+  package.quality:
+    category: package
+    description: Verify evidence, citations, multimodal package contents, and budgets.
+    target_outputs: [clinical_context_delivery]
+    checks: [package_contents, citation_requirement, budget_limits]
+  lineage.completeness:
+    category: lineage
+    description: Verify readable lineage and mutation invalidation across text and linked-image derivations.
+    target_roles: [case_version, image_version]
+    checks: [lineage_completeness, readable_names, mutation_invalidation]
+  operational.accounting:
+    category: operational
+    description: Verify bounded provider and runtime accounting.
+    target_outputs: [clinical_context_delivery]
+    checks: [request_accounting, latency_accounting, cache_isolation]
+    hidden_expectations: false

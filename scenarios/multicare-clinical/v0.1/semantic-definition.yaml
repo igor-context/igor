@@ -1,0 +1,42 @@
+semantic_definition_id: multicare.clinical.diagnostic
+revision: "1"
+title: MultiCaRe clinical-case diagnostic enrichment
+taxonomy:
+  imaging_modality:
+    description: Imaging modality of any figure linked to the case
+    values: [radiograph, ct, mri, ultrasound, photograph, histopathology, ecg, other, none]
+  clinical_significance:
+    description: Clinical significance of the presented findings
+    values: [routine, notable, critical]
+enrichment_schema:
+  type: object
+  properties:
+    primary_diagnosis:
+      type: string
+      maxLength: 160
+      description: The single most likely primary diagnosis suggested by the case narrative and any linked image.
+    presenting_symptoms:
+      type: array
+      items: { type: string }
+      description: Symptoms the patient presented with, as described in the case narrative.
+    key_findings:
+      type: array
+      items: { type: string }
+      description: Key clinical or imaging findings supporting the diagnosis.
+    imaging_modality:
+      type: string
+      enum: [radiograph, ct, mri, ultrasound, photograph, histopathology, ecg, other, none]
+      description: The imaging modality of any linked figure, or none if the case has no linked image.
+    clinical_summary:
+      type: string
+      maxLength: 240
+      description: One concise sentence summarizing the clinical picture.
+    clinical_significance:
+      type: string
+      enum: [routine, notable, critical]
+      description: The clinical significance of the presented findings.
+    evidence_spans:
+      type: array
+      items: { type: string }
+      description: Optional evidence excerpts supporting the enrichment.
+  required: [primary_diagnosis, presenting_symptoms, key_findings, imaging_modality, clinical_summary, clinical_significance]

@@ -1,0 +1,12 @@
+schema_version: "0.1"
+recipes:
+  clinical.case-enrichment-recipe.v1:
+    recipe_id: clinical.case-enrichment-recipe
+    revision: "1"
+    accepted_representation_types: [text, image]
+    accepted_media_types: [text/plain, image/png, image/jpeg]
+    output_schema: clinical.enrichment.v1
+    prompt_version: "1"
+    taxonomy_version: "1"
+    evidence_required: true
+    abstention_allowed: true

@@ -1,12 +1,15 @@
 import hashlib
 import io
 import json
+import tempfile
 import unittest
 import zipfile
+from pathlib import Path
 from urllib.error import HTTPError
 from unittest.mock import patch
 
-from igor_huggingface import AcquisitionError, DatasetSelection, HuggingFaceAdapter, ImageSelection, RowSelection
+from igor_huggingface import (AcquisitionError, CaseImageSelection, DatasetSelection, HuggingFaceAdapter,
+                              ImageSelection, RowSelection)
 from igor_huggingface.adapter import _row_windows
 
 
@@ -322,6 +325,101 @@ class AdapterTest(unittest.TestCase):
     def _tmpdir():
         import tempfile
         return tempfile.mkdtemp()
+
+    def test_case_image_selection_mutable_revision_fails_closed(self):
+        with self.assertRaises(AcquisitionError):
+            CaseImageSelection("owner/name", "main", "default", "train", "case_id", "image_id",
+                               "image", "caption", "license", (0,))
+
+    def test_case_image_selection_requires_row_numbers(self):
+        with self.assertRaises(AcquisitionError):
+            CaseImageSelection("owner/name", "a" * 40, "default", "train", "case_id", "image_id",
+                               "image", "caption", "license", ())
+
+    def test_acquire_case_images_filters_by_license_and_writes_files(self):
+        rows_page_maker = [
+            {"rows": [{"row_idx": 0, "row": {
+                "case_id": "case-1", "image_id": "img-1", "figure_id": "fig1",
+                "caption": "chest x-ray", "license": "CC-BY-4.0",
+                "image": {"src": "https://example.test/img1.png", "width": 100, "height": 80},
+            }}]},
+            {"rows": [{"row_idx": 1, "row": {
+                "case_id": "case-2", "image_id": "img-2", "figure_id": "fig1",
+                "caption": "mri scan", "license": "CC-BY-NC-4.0",
+                "image": {"src": "https://example.test/img2.png", "width": 50, "height": 50},
+            }}]},
+        ]
+        selection = CaseImageSelection(
+            "owner/name", "a" * 40, "default", "train",
+            "case_id", "image_id", "image", "caption", "license",
+            (0, 1), figure_id_field="figure_id",
+        )
+        image_bytes = b"\x89PNGfake-image-bytes"
+
+        def fake(url, **kwargs):
+            class Response:
+                def __enter__(self): return self
+                def __exit__(self, *args): pass
+                def read(self_inner):
+                    full = url.full_url
+                    if "/api/datasets/" in full:
+                        return json.dumps({"private": False, "gated": False, "disabled": False,
+                                           "sha": selection.revision}).encode()
+                    if "offset=0" in full:
+                        return json.dumps(rows_page_maker[0]).encode()
+                    if "offset=1" in full:
+                        return json.dumps(rows_page_maker[1]).encode()
+                    return image_bytes
+            return Response()
+
+        output_dir = Path(tempfile.mkdtemp())
+        result = HuggingFaceAdapter(opener=fake).acquire_case_images(selection, output_dir)
+        self.assertEqual(len(result.records), 1)
+        self.assertEqual(result.skipped_license_count, 1)
+        record = result.records[0]
+        self.assertEqual(record["case_id"], "case-1")
+        self.assertEqual(record["content_sha256"], "sha256:" + hashlib.sha256(image_bytes).hexdigest())
+        saved = Path(record["image_path"])
+        self.assertTrue(saved.is_file())
+        self.assertEqual(saved.read_bytes(), image_bytes)
+        self.assertEqual(saved.name, "case-1_img-1.png")
+
+    def test_acquire_case_images_stops_at_byte_budget(self):
+        rows_page = {"rows": [
+            {"row_idx": 0, "row": {"case_id": "case-1", "image_id": "img-1", "figure_id": None,
+                                    "caption": "a", "license": "cc-by-4.0",
+                                    "image": {"src": "https://example.test/img1.png"}}},
+            {"row_idx": 1, "row": {"case_id": "case-1", "image_id": "img-2", "figure_id": None,
+                                    "caption": "b", "license": "cc-by-4.0",
+                                    "image": {"src": "https://example.test/img2.png"}}},
+        ]}
+        selection = CaseImageSelection(
+            "owner/name", "a" * 40, "default", "train",
+            "case_id", "image_id", "image", "caption", "license",
+            (0, 1), max_bytes=10,
+        )
+        image_bytes = b"0123456789"  # exactly max_bytes for the first image
+
+        def fake(url, **kwargs):
+            class Response:
+                def __enter__(self): return self
+                def __exit__(self, *args): pass
+                def read(self_inner):
+                    full = url.full_url
+                    if "/api/datasets/" in full:
+                        return json.dumps({"private": False, "gated": False, "disabled": False,
+                                           "sha": selection.revision}).encode()
+                    if "offset=0" in full:
+                        return json.dumps({"rows": [rows_page["rows"][0]]}).encode()
+                    if "offset=1" in full:
+                        return json.dumps({"rows": [rows_page["rows"][1]]}).encode()
+                    return image_bytes
+            return Response()
+
+        output_dir = Path(tempfile.mkdtemp())
+        result = HuggingFaceAdapter(opener=fake).acquire_case_images(selection, output_dir)
+        self.assertEqual(len(result.records), 1)
+        self.assertEqual(result.total_bytes, 10)
 
 
 if __name__ == "__main__":

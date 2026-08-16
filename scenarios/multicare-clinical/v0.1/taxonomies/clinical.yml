@@ -1,0 +1,23 @@
+schema_version: "0.1"
+semantic_definitions:
+  clinical.diagnostic-taxonomy.v1:
+    definition_id: clinical.diagnostic-taxonomy
+    revision: "1"
+    scope: MultiCaRe clinical-case + diagnostic-image enrichment interpretation
+    description: Human-authored meanings and abstention rules for diagnosis, findings, and imaging-modality enrichment derived jointly from case narrative text and any linked diagnostic image.
+    concepts:
+      - {id: radiograph, description: Plain-film X-ray imaging.}
+      - {id: ct, description: Computed tomography imaging.}
+      - {id: mri, description: Magnetic resonance imaging.}
+      - {id: ultrasound, description: Ultrasound/sonographic imaging.}
+      - {id: photograph, description: Clinical or gross-pathology photograph.}
+      - {id: histopathology, description: Microscopic histopathology imaging.}
+      - {id: ecg, description: Electrocardiogram tracing.}
+      - {id: other, description: An imaging modality that does not fit another category.}
+      - {id: none, description: The case has no linked diagnostic image.}
+    rules:
+      abstain_when: [missing_case_text, missing_source_case_id]
+      precedence: [official_case_narrative, linked_image_finding, semantic_similarity]
+    coverage:
+      known_limitations: [English-language PubMed Central case reports and CC-BY-licensed linked figures only]
+    display_name: MultiCaRe diagnostic-enrichment taxonomy

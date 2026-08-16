@@ -1,0 +1,77 @@
+schema_version: "0.1"
+context_model:
+  id: multicare.clinical.context
+  revision: "1"
+  title: MultiCaRe authoritative multimodal clinical-case context
+objects:
+  clinical_case:
+    kind: business_object
+    source: clinical_cases
+    display_name: "Case {{ case_id }} — {{ keywords }}"
+  case_snapshot:
+    kind: source_snapshot
+    source: clinical_cases
+    display_name: "Case {{ case_id }} snapshot"
+  case_version:
+    kind: semantic_derivation
+    derived_from: [case_snapshot]
+    operation: representation.clinical-case.v1
+    schema: clinical.case.v1
+    display_name: Clinical case version
+  clinical_image:
+    kind: business_object
+    source: clinical_images
+    display_name: "Image {{ image_id }} for Case {{ case_id }}"
+  image_snapshot:
+    kind: source_snapshot
+    source: clinical_images
+    display_name: "Image {{ image_id }} snapshot"
+  image_version:
+    kind: semantic_derivation
+    derived_from: [image_snapshot]
+    operation: representation.clinical-image.v1
+    schema: clinical.image.v1
+    display_name: Clinical image version
+  multimodal_embedding:
+    kind: retrieval_projection
+    derived_from: [case_version, image_version]
+    operation: embedding.multimodal.v1
+    schema: clinical.multimodal-embedding.v1
+    model_profile: clinical.multimodal.embedding.v1
+    display_name: Multimodal case+image embedding
+  case_enrichment:
+    kind: semantic_derivation
+    derived_from: [case_version, image_version]
+    operation: enrichment.clinical-case.v1
+    schema: clinical.enrichment.v1
+    semantic_definition: clinical.diagnostic-taxonomy.v1
+    recipe: clinical.case-enrichment-recipe.v1
+    model_profile: clinical.text.completion.v1
+    display_name: Clinical case enrichment
+presentation:
+  case_version:
+    preview_fields: [case_id, article_id, gender, age, case_text]
+    display_name: Case version
+  image_version:
+    preview_fields: [case_id, image_id, caption, media_type]
+    display_name: Image version
+tests:
+  - identity_unique: clinical_case
+  - snapshot_integrity: case_snapshot
+  - evidence_required: case_version
+  - lineage_complete: case_version
+  - no_orphan_outputs: {}
+uses:
+  sources: [clinical_cases, clinical_images]
+  authority: [official_case_source, official_image_source]
+  retrievals: [case_search]
+  outputs: [clinical_context_delivery]
+  contracts: [clinical.clinical-agent.v1]
+  evaluations:
+    - retrieval.relevance
+    - authority.selection
+    - temporal.state
+    - contract.behavior
+    - package.quality
+    - lineage.completeness
+    - operational.accounting

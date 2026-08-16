@@ -1,0 +1,16 @@
+scenarios:
+  - id: single_case_multimodal
+    description: One case with linked text narrative and CC-BY diagnostic image retrieved together
+    case_index: 0
+    expected_case_count_min: 3
+  - id: cross_case_comparison
+    description: Compare presenting findings across different cases within the same specialty
+    case_index: 1
+  - id: semantic_low_overlap
+    description: Low lexical overlap between a query and a relevant case's narrative/image caption
+    case_index: 2
+    retrieval_challenge: semantic
+  - id: license_gated_image
+    description: A non-CC-BY (CC-BY-NC) image on case-3 is excluded before context derivation and never reaches a published package
+    case_index: 2
+    retrieval_challenge: license_governance

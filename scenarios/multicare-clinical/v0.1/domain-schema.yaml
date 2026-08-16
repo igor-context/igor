@@ -1,0 +1,43 @@
+schema_id: multicare.clinical
+revision: "1"
+title: MultiCaRe multimodal clinical-case lifecycle
+domain: clinical
+objects:
+  clinical_case:
+    kind: business_object
+    identity_fields: [case_id, article_id]
+    display_name: "Case {{ case_id }} — {{ keywords }}"
+  case_snapshot:
+    kind: source_snapshot
+    identity_fields: [snapshot_id]
+    effective_from_field: effective_from
+    effective_to_field: effective_to
+    superseded_by_field: superseded_by
+    display_name: "Case {{ case_id }} snapshot as of {{ effective_from }}"
+  clinical_image:
+    kind: business_object
+    identity_fields: [case_id, image_id]
+    display_name: "Image {{ image_id }} for Case {{ case_id }}"
+  image_snapshot:
+    kind: source_snapshot
+    identity_fields: [snapshot_id]
+    effective_from_field: effective_from
+    effective_to_field: effective_to
+    superseded_by_field: superseded_by
+    display_name: "Image {{ image_id }} snapshot as of {{ effective_from }}"
+fields:
+  case_id: { type: string, required: true }
+  article_id: { type: string, required: true }
+  gender: { type: string, required: false }
+  age: { type: string, required: false }
+  case_text: { type: string, required: true }
+  keywords: { type: string, required: false }
+  image_id: { type: string, required: true }
+  figure_id: { type: string, required: false }
+  caption: { type: string, required: false }
+  media_type: { type: string, required: true }
+  content_sha256: { type: string, required: true }
+  license: { type: string, required: true }
+  effective_from: { type: datetime, required: true }
+  effective_to: { type: datetime, required: false }
+  superseded_by: { type: string, required: false }

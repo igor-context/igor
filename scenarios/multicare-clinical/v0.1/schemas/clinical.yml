@@ -1,0 +1,107 @@
+schema_version: "0.1"
+schemas:
+  clinical.case.v1:
+    schema_version: "0.1"
+    schema_id: clinical.case
+    revision: "1"
+    domain: clinical
+    fields:
+      - {field_id: case_id, name: case_id, logical_type: string, required: true}
+      - {field_id: article_id, name: article_id, logical_type: string, required: true}
+      - {field_id: gender, name: gender, logical_type: string, required: false}
+      - {field_id: age, name: age, logical_type: string, required: false}
+      - {field_id: case_text, name: case_text, logical_type: text, required: true}
+      - {field_id: keywords, name: keywords, logical_type: string, required: false}
+      - {field_id: effective_from, name: effective_from, logical_type: timestamp, required: true}
+    json_schema:
+      type: object
+      additionalProperties: true
+      required: [case_id, article_id, case_text, effective_from]
+      properties:
+        case_id: {type: string}
+        article_id: {type: string}
+        gender: {type: string}
+        age: {type: string}
+        case_text: {type: string}
+        keywords: {type: string}
+        effective_from: {type: string}
+  clinical.image.v1:
+    schema_version: "0.1"
+    schema_id: clinical.image
+    revision: "1"
+    domain: clinical
+    fields:
+      - {field_id: case_id, name: case_id, logical_type: string, required: true}
+      - {field_id: image_id, name: image_id, logical_type: string, required: true}
+      - {field_id: caption, name: caption, logical_type: text, required: false}
+      - {field_id: media_type, name: media_type, logical_type: string, required: true}
+      - {field_id: content_sha256, name: content_sha256, logical_type: string, required: true}
+      - {field_id: license, name: license, logical_type: string, required: true}
+    json_schema:
+      type: object
+      additionalProperties: true
+      required: [case_id, image_id, media_type, content_sha256, license]
+      properties:
+        case_id: {type: string}
+        image_id: {type: string}
+        figure_id: {type: string}
+        caption: {type: string}
+        media_type: {type: string}
+        content_sha256: {type: string}
+        width: {type: [integer, "null"]}
+        height: {type: [integer, "null"]}
+        license: {type: string}
+  clinical.multimodal-embedding.v1:
+    schema_version: "0.1"
+    schema_id: clinical.multimodal-embedding
+    revision: "1"
+    domain: clinical
+    fields:
+      - {field_id: vector, name: vector, logical_type: embedding, required: true}
+    json_schema:
+      type: object
+      additionalProperties: false
+      required: [vector]
+      properties:
+        vector: {type: array, items: {type: number}}
+  clinical.enrichment.v1:
+    schema_version: "0.1"
+    schema_id: clinical.enrichment
+    revision: "1"
+    domain: clinical
+    fields:
+      - {field_id: primary_diagnosis, name: primary_diagnosis, logical_type: string, required: true}
+      - {field_id: clinical_summary, name: clinical_summary, logical_type: text, required: true}
+    json_schema:
+      type: object
+      additionalProperties: false
+      required: [primary_diagnosis, presenting_symptoms, key_findings, imaging_modality, clinical_summary, clinical_significance]
+      properties:
+        primary_diagnosis:
+          type: string
+          maxLength: 160
+          description: The single most likely primary diagnosis suggested by the case narrative and any linked image.
+        presenting_symptoms:
+          type: array
+          items: {type: string}
+          description: Symptoms the patient presented with, as described in the case narrative.
+        key_findings:
+          type: array
+          items: {type: string}
+          description: Key clinical or imaging findings supporting the diagnosis.
+        imaging_modality:
+          type: string
+          enum: [radiograph, ct, mri, ultrasound, photograph, histopathology, ecg, other, none]
+          description: The imaging modality of any linked figure, or none if the case has no linked image.
+        clinical_summary:
+          type: string
+          maxLength: 240
+          description: One concise sentence summarizing the clinical picture.
+        clinical_significance:
+          type: string
+          enum: [routine, notable, critical]
+          description: The clinical significance of the presented findings.
+        evidence_spans:
+          type: array
+          items: {type: string}
+          description: Optional evidence excerpts supporting the enrichment.

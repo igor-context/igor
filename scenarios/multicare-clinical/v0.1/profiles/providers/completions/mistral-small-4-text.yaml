@@ -1,0 +1,15 @@
+schema_version: "0.1"
+profile_id: mistral-small-4-text-v0
+capability: completion
+provider: mistral
+model: mistral-small-2603
+revision: mistral-small-4-2026-03
+parameters:
+  endpoint: https://api.mistral.ai/v1/chat/completions
+  workload: structured_text
+  temperature: 0
+  response_format: json_object
+  supported_content_kinds: [text, image]
+  max_concurrency: 1
+  retry_attempts: 6
+  retry_backoff_seconds: 10.0

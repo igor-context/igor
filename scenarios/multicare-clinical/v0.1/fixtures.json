@@ -1,0 +1,139 @@
+{
+  "cases_dataset_revision": "e5b0a5418dbb6edce6b731c47664cb4f269833bb",
+  "images_dataset_revision": "c8517124928d2fe3651ee6cb6c560fce66e02344",
+  "source": "openmed-community/multicare-cases config=default split=train + openmed-community/multicare-case-images config=default split=train",
+  "fixture_note": "case_text and caption fields are hand-authored synthetic cardiology-case narratives modeled on typical PubMed Central case-report language. They are NOT verbatim article text and must not be treated as evidence of any real patient's actual case. Linked images under fixtures/sources/images/ are synthetic solid-color placeholder PNGs, never real medical images.",
+  "cases": [
+    {
+      "case_id": "case-1",
+      "article_id": "PMC-fixture-0001",
+      "gender": "Female",
+      "age": "58",
+      "case_text": "A 58-year-old woman presented with progressive exertional dyspnea and bilateral lower-extremity edema over three weeks. Chest radiograph on admission showed cardiomegaly with an enlarged cardiac silhouette and mild pulmonary vascular congestion. Electrocardiogram demonstrated sinus tachycardia with left ventricular hypertrophy criteria. Transthoracic echocardiography confirmed reduced left ventricular ejection fraction consistent with non-ischemic dilated cardiomyopathy.",
+      "keywords": "dilated cardiomyopathy, cardiomegaly, heart failure",
+      "specialty_tags": "cardiology"
+    },
+    {
+      "case_id": "case-2",
+      "article_id": "PMC-fixture-0002",
+      "gender": "Male",
+      "age": "64",
+      "case_text": "A 64-year-old man with a history of hypertension presented to the emergency department with crushing substernal chest pain radiating to the left arm. Electrocardiogram revealed ST-segment elevation in the anterior leads. Emergent coronary angiography demonstrated a proximal left anterior descending artery occlusion, and the patient underwent successful percutaneous coronary intervention with stent placement.",
+      "keywords": "myocardial infarction, coronary occlusion, percutaneous intervention",
+      "specialty_tags": "cardiology"
+    },
+    {
+      "case_id": "case-3",
+      "article_id": "PMC-fixture-0003",
+      "gender": "Female",
+      "age": "71",
+      "case_text": "A 71-year-old woman was referred for evaluation of a new systolic murmur discovered on routine examination. She reported mild fatigue but denied syncope or chest pain. Echocardiography identified severe calcific aortic stenosis with a markedly reduced valve area. A follow-up chest radiograph showed a boot-shaped cardiac silhouette with post-stenotic dilation of the ascending aorta.",
+      "keywords": "aortic stenosis, valvular heart disease, murmur",
+      "specialty_tags": "cardiology"
+    },
+    {
+      "case_id": "case-4",
+      "article_id": "PMC-fixture-0004",
+      "gender": "Male",
+      "age": "45",
+      "case_text": "A 45-year-old man presented with palpitations and lightheadedness lasting several hours. Electrocardiogram on presentation showed a narrow-complex tachycardia at 180 beats per minute, consistent with atrioventricular nodal reentrant tachycardia. The rhythm terminated after vagal maneuvers, and a subsequent electrocardiogram in sinus rhythm was unremarkable.",
+      "keywords": "supraventricular tachycardia, arrhythmia, vagal maneuver",
+      "specialty_tags": "cardiology"
+    },
+    {
+      "case_id": "case-5",
+      "article_id": "PMC-fixture-0005",
+      "gender": "Female",
+      "age": "39",
+      "case_text": "A 39-year-old woman in her third trimester of pregnancy presented with new-onset dyspnea and orthopnea. Echocardiography revealed a markedly reduced ejection fraction with global hypokinesis and no prior history of cardiac disease, raising concern for peripartum cardiomyopathy. Chest radiograph showed mild cardiomegaly without frank pulmonary edema.",
+      "keywords": "peripartum cardiomyopathy, pregnancy, heart failure",
+      "specialty_tags": "cardiology"
+    }
+  ],
+  "images": [
+    {
+      "case_id": "case-1",
+      "image_id": "img-1",
+      "figure_id": "fig1",
+      "caption": "Posteroanterior chest radiograph showing cardiomegaly with an enlarged cardiac silhouette.",
+      "image_path": "fixtures/sources/images/case-1_img-1.png",
+      "media_type": "image/png",
+      "content_sha256": "sha256:f0ef986e8809d76acce6bade44b4b9d76cd4318d60ec6735e9fca6f3b2e5107c",
+      "width": 16,
+      "height": 12,
+      "license": "CC-BY-4.0"
+    },
+    {
+      "case_id": "case-1",
+      "image_id": "img-2",
+      "figure_id": "fig2",
+      "caption": "Twelve-lead electrocardiogram showing sinus tachycardia with left ventricular hypertrophy criteria.",
+      "image_path": "fixtures/sources/images/case-1_img-2.png",
+      "media_type": "image/png",
+      "content_sha256": "sha256:0fc46cb7deee1897d7a847641a06f6ecbcc3fa32b2400f19eb4e888a61afea4d",
+      "width": 10,
+      "height": 10,
+      "license": "CC-BY-4.0"
+    },
+    {
+      "case_id": "case-2",
+      "image_id": "img-1",
+      "figure_id": "fig1",
+      "caption": "Coronary angiogram demonstrating a proximal left anterior descending artery occlusion.",
+      "image_path": "fixtures/sources/images/case-2_img-1.png",
+      "media_type": "image/png",
+      "content_sha256": "sha256:40546649f87956f6514eb83e405655418ecd605a162cc4e6d76419c383964a7a",
+      "width": 14,
+      "height": 14,
+      "license": "CC-BY-4.0"
+    },
+    {
+      "case_id": "case-3",
+      "image_id": "img-1",
+      "figure_id": "fig1",
+      "caption": "Chest radiograph showing a boot-shaped cardiac silhouette with post-stenotic aortic dilation.",
+      "image_path": "fixtures/sources/images/case-3_img-1.png",
+      "media_type": "image/png",
+      "content_sha256": "sha256:2c34120f21981c7ad69e285b15c17a332451af65f3b6a0b2df89c8f6ad359233",
+      "width": 12,
+      "height": 16,
+      "license": "CC-BY-4.0"
+    },
+    {
+      "case_id": "case-3",
+      "image_id": "img-2",
+      "figure_id": "fig2",
+      "caption": "Echocardiogram still frame showing severe calcific aortic stenosis.",
+      "image_path": "fixtures/sources/images/case-3_img-2.png",
+      "media_type": "image/png",
+      "content_sha256": "sha256:487fc959500b594d6ecc6cc7cb92e24df9ada5bb4a2ebf6a0d92e0728209ac72",
+      "width": 8,
+      "height": 8,
+      "license": "CC-BY-NC-4.0"
+    },
+    {
+      "case_id": "case-4",
+      "image_id": "img-1",
+      "figure_id": "fig1",
+      "caption": "Electrocardiogram strip showing narrow-complex tachycardia at 180 beats per minute.",
+      "image_path": "fixtures/sources/images/case-4_img-1.png",
+      "media_type": "image/png",
+      "content_sha256": "sha256:776da7de0384294c242777cd5604a58d5a77bb0ac07ec1363870ee43e397eabc",
+      "width": 10,
+      "height": 14,
+      "license": "CC-BY-4.0"
+    },
+    {
+      "case_id": "case-5",
+      "image_id": "img-1",
+      "figure_id": "fig1",
+      "caption": "Echocardiogram showing global hypokinesis with markedly reduced ejection fraction.",
+      "image_path": "fixtures/sources/images/case-5_img-1.png",
+      "media_type": "image/png",
+      "content_sha256": "sha256:22db196c7271555cca12297f3f24d4db9e9f70b3568231481f728bf66485d6fa",
+      "width": 12,
+      "height": 12,
+      "license": "CC-BY-4.0"
+    }
+  ]
+}

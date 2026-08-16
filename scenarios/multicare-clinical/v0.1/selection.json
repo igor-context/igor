@@ -1,0 +1,22 @@
+{
+  "repository": "OpenMed/multicare-cases",
+  "revision": "e5b0a5418dbb6edce6b731c47664cb4f269833bb",
+  "config": "default",
+  "split": "train",
+  "license": "cc-by-4.0",
+  "max_bytes": 10485760,
+  "max_rows": 100,
+  "row_numbers": [1, 4, 6, 13, 19, 20, 38, 50],
+  "selector_field": "article_id",
+  "selector_values": [
+    "PMC5015624",
+    "PMC5287946",
+    "PMC7276389",
+    "PMC7174775",
+    "PMC7201103",
+    "PMC7373792",
+    "PMC2750244",
+    "PMC5114320"
+  ],
+  "fields": ["article_id", "cases"]
+}

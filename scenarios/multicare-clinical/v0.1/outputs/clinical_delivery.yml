@@ -1,0 +1,12 @@
+schema_version: "0.1"
+outputs:
+  clinical_context_delivery:
+    output_type: context_package
+    retrieval: case_search
+    contract: clinical.clinical-agent.v1
+    target_roles: [case_version, image_version, case_enrichment]
+    format: structured
+    destination: agent
+    display_name: Authoritative multimodal clinical-case context package
+    settings:
+      citation_style: source-reference

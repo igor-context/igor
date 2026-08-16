@@ -1,0 +1,93 @@
+schema_version: "0.1"
+source_contracts:
+  clinical.cases.v1:
+    contract_id: clinical.cases
+    revision: "1"
+    domain: clinical
+    resources:
+      - resource_id: cases
+        resource_kind: clinical_case_report
+        identity_concepts: [case_id, article_id]
+        fields:
+          - {concept_id: case_id, logical_type: string, required: true}
+          - {concept_id: article_id, logical_type: string, required: true}
+          - {concept_id: patient_id, logical_type: string, required: false}
+          - {concept_id: pmcid, logical_type: string, required: false}
+          - {concept_id: gender, logical_type: string, required: false}
+          - {concept_id: age, logical_type: string, required: false}
+          - {concept_id: case_text, logical_type: text, required: true}
+          - {concept_id: keywords, logical_type: string, required: false}
+          - {concept_id: specialty_tags, logical_type: string, required: false}
+          - {concept_id: license, logical_type: string, required: false}
+        accepted_media_types: [text/plain]
+        change_mode: snapshot
+        deletion_semantics: ignore
+  clinical.images.v1:
+    contract_id: clinical.images
+    revision: "1"
+    domain: clinical
+    resources:
+      - resource_id: images
+        resource_kind: clinical_case_image
+        identity_concepts: [case_id, image_id]
+        fields:
+          - {concept_id: case_id, logical_type: string, required: true}
+          - {concept_id: image_id, logical_type: string, required: true}
+          - {concept_id: figure_id, logical_type: string, required: false}
+          - {concept_id: caption, logical_type: text, required: false}
+          - {concept_id: image_path, logical_type: string, required: true}
+          - {concept_id: media_type, logical_type: string, required: true}
+          - {concept_id: content_sha256, logical_type: string, required: true}
+          - {concept_id: license, logical_type: string, required: true}
+        accepted_media_types: [image/png, image/jpeg]
+        change_mode: snapshot
+        deletion_semantics: ignore
+connector_bindings:
+  huggingface.multicare-cases.v1:
+    binding_id: huggingface.multicare-cases
+    revision: "1"
+    source_contract_ref: clinical.cases.v1
+    connector: huggingface-rows
+    deployment_ref: OpenMed/multicare-cases@e5b0a5418dbb6edce6b731c47664cb4f269833bb
+    # Only case_id, article_id, case_text, age, and gender are confirmed present on
+    # the live openmed-community/multicare-cases schema (verified against the
+    # dataset card at qualification-build time). patient_id, pmcid, keywords,
+    # specialty_tags, and license stay declared as optional contract concepts for
+    # forward compatibility but are intentionally left unbound here so a real
+    # acquisition does not fail on columns the live dataset does not expose.
+    resources:
+      - resource_id: cases
+        source_resource: default/train
+        fields:
+          - {concept_id: case_id, source_field: case_id}
+          - {concept_id: article_id, source_field: article_id}
+          - {concept_id: gender, source_field: gender}
+          - {concept_id: age, source_field: age}
+          - {concept_id: case_text, source_field: case_text}
+  huggingface.multicare-images.v1:
+    binding_id: huggingface.multicare-images
+    revision: "1"
+    source_contract_ref: clinical.images.v1
+    connector: huggingface-case-images
+    deployment_ref: OpenMed/multicare-case-images@c8517124928d2fe3651ee6cb6c560fce66e02344
+    resources:
+      - resource_id: images
+        source_resource: default/train
+        fields:
+          - {concept_id: case_id, source_field: case_id}
+          - {concept_id: image_id, source_field: image_id}
+          - {concept_id: figure_id, source_field: figure_id}
+          - {concept_id: caption, source_field: caption}
+          - {concept_id: image_path, source_field: image_path}
+          - {concept_id: media_type, source_field: media_type}
+          - {concept_id: content_sha256, source_field: content_sha256}
+          - {concept_id: license, source_field: license}
+sources:
+  clinical_cases:
+    source_contract: clinical.cases.v1
+    connector_binding: huggingface.multicare-cases.v1
+    identity_fields: [case_id, article_id]
+  clinical_images:
+    source_contract: clinical.images.v1
+    connector_binding: huggingface.multicare-images.v1
+    identity_fields: [case_id, image_id]

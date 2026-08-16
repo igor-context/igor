@@ -728,6 +728,7 @@ services:
       PATH: /opt/igor-project-cli/.venv/bin:/usr/local/bin:/usr/bin:/bin
     volumes:
       - ./scenarios/recare-legal:/opt/scenarios/recare-legal:ro
+      - ./scenarios/multicare-clinical:/opt/scenarios/multicare-clinical:ro
       - ./.igor/project-cli:/workspace
     command: ["igor", "--help"]
 
@@ -769,6 +770,25 @@ services:
       - ./.igor/recare-acquisition:/tmp/recare-acquisition:ro
       - ./.igor/recare-live:/tmp/recare-live
     command: ["igor-runner", "recare-qualification-live", "/opt/scenarios/recare-legal/v0.1", "/opt/config/compiler/live-text-general-v0.yaml", "/tmp/recare-acquisition", "/tmp/recare-live"]
+
+  multicare-deterministic-qualification:
+    <<: *runner-runtime
+    profiles: [qualification]
+    network_mode: ""
+    networks: [qualification]
+    volumes:
+      - ./scenarios/multicare-clinical:/opt/scenarios/multicare-clinical:ro
+      - ./config:/opt/config:ro
+      - ./.igor/multicare-deterministic:/tmp/multicare-deterministic
+    command: ["igor-runner", "multicare-qualification", "/opt/scenarios/multicare-clinical/v0.1", "/tmp/multicare-deterministic"]
+
+  multicare-authoritative-evaluate:
+    <<: *evaluator-runtime
+    profiles: [qualification]
+    volumes:
+      - ./.igor/multicare-deterministic:/tmp/multicare-deterministic:ro
+      - ./.igor/multicare-evaluation:/tmp/multicare-evaluation
+    command: ["igor-evaluator", "authoritative-context", "/tmp/multicare-deterministic/qualification.json", "--output", "/tmp/multicare-evaluation/evaluation.json"]
 
   context-e2e:
     <<: *runner-runtime

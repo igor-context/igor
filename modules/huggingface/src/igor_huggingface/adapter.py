@@ -20,6 +20,27 @@ class AcquisitionError(ValueError):
     pass
 
 
+def _license_accepted(value: str, allowed_prefixes: tuple[str, ...]) -> bool:
+    """Token-aware CC-BY acceptance check.
+
+    Hugging Face license columns are free text such as ``"CC BY"``, ``"CC-BY-4.0"``,
+    ``"CC BY-NC"``, or ``"NO-CC CODE"``. A naive ``str.startswith`` prefix check would
+    wrongly accept ``"CC BY-NC"`` when the allowed prefix is ``"CC BY"`` because it is
+    a textual prefix of the more restrictive designation. This normalizes hyphens and
+    whitespace, rejects any designation carrying a restriction token (``nc``, ``nd``,
+    ``sa``), and only then checks the normalized prefix.
+    """
+    normalized = re.sub(r"\s+", " ", re.sub(r"[-_]+", " ", value.strip().lower())).strip()
+    tokens = set(normalized.split())
+    if tokens & {"nc", "nd", "sa"}:
+        return False
+    for prefix in allowed_prefixes:
+        prefix_normalized = re.sub(r"\s+", " ", re.sub(r"[-_]+", " ", prefix.strip().lower())).strip()
+        if normalized == prefix_normalized or normalized.startswith(prefix_normalized + " "):
+            return True
+    return False
+
+
 def _row_windows(row_numbers: tuple[int, ...], *, max_length: int = 100) -> tuple[tuple[int, int], ...]:
     if not row_numbers:
         return ()
@@ -263,6 +284,79 @@ class RowAcquisitionResult:
         }
 
 
+@dataclass(frozen=True)
+class CaseImageSelection:
+    """Bounded, license-filtered selection of case images from a Dataset Viewer-backed HF split.
+
+    Unlike :class:`RowSelection`, this seam downloads the referenced image bytes for
+    each matched row (via the row's inline ``image.src`` reference) rather than
+    projecting scalar fields. Only rows whose ``license_field`` value starts with one
+    of ``allowed_license_prefixes`` are acquired; every other row is skipped, not
+    failed. Acquisition stops once ``max_bytes`` of image content has been
+    downloaded, returning whatever was collected so far.
+    """
+    repository: str
+    revision: str
+    config: str
+    split: str
+    case_id_field: str
+    image_id_field: str
+    image_field: str
+    caption_field: str
+    license_field: str
+    row_numbers: tuple[int, ...]
+    figure_id_field: str | None = None
+    allowed_license_prefixes: tuple[str, ...] = ("cc-by",)
+    max_bytes: int = 50 * 1024 * 1024
+    max_rows: int = 100
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "row_numbers", tuple(self.row_numbers))
+        object.__setattr__(self, "allowed_license_prefixes", tuple(self.allowed_license_prefixes))
+        if not re.fullmatch(r"[0-9a-f]{40}", self.revision):
+            raise AcquisitionError("case-image revision must be an immutable 40-character commit SHA")
+        if not self.repository or self.repository.count("/") != 1:
+            raise AcquisitionError("repository must be owner/name")
+        if not self.case_id_field.strip() or not self.image_id_field.strip() or not self.image_field.strip():
+            raise AcquisitionError("case_id_field, image_id_field, and image_field are required")
+        if not self.license_field.strip():
+            raise AcquisitionError("license_field is required")
+        if not self.allowed_license_prefixes:
+            raise AcquisitionError("allowed_license_prefixes must be non-empty")
+        if not self.row_numbers:
+            raise AcquisitionError("row_numbers must be non-empty")
+        if any(row < 0 for row in self.row_numbers):
+            raise AcquisitionError("row_numbers must be zero-based")
+        if tuple(sorted(set(self.row_numbers))) != self.row_numbers:
+            raise AcquisitionError("row_numbers must be unique and deterministically ordered")
+        if self.max_bytes <= 0 or self.max_rows <= 0:
+            raise AcquisitionError("max_bytes and max_rows must be positive")
+        if len(self.row_numbers) > self.max_rows:
+            raise AcquisitionError("row_numbers exceed max_rows")
+
+
+@dataclass(frozen=True)
+class CaseImageAcquisitionResult:
+    repository: str
+    revision: str
+    config: str
+    split: str
+    records: tuple[dict[str, Any], ...]
+    skipped_license_count: int
+    total_bytes: int
+    license_prefixes: tuple[str, ...]
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "repository": self.repository, "revision": self.revision,
+            "config": self.config, "split": self.split,
+            "records": list(self.records),
+            "skipped_license_count": self.skipped_license_count,
+            "total_bytes": self.total_bytes,
+            "license_prefixes": list(self.license_prefixes),
+        }
+
+
 class HuggingFaceAdapter:
     def __init__(self, *, token: str | None = None, opener=None, sleep=None) -> None:
         self._token = token if token is not None else os.environ.get("HF_TOKEN")
@@ -447,6 +541,103 @@ class HuggingFaceAdapter:
         return DocumentAcquisitionResult(selection.repository, selection.revision, selection.config,
                                          selection.split, tuple(records), tuple(judgments), source_bytes,
                                          len(page_paths))
+
+    def acquire_case_images(self, selection: CaseImageSelection, output_dir: str | Path) -> CaseImageAcquisitionResult:
+        """Acquire license-filtered case images referenced inline by Dataset Viewer rows.
+
+        Each selected row's ``image_field`` is expected to be a Dataset Viewer image
+        object (``{"src": ..., "width": ..., "height": ...}``); the referenced bytes
+        are downloaded, hashed, and written as ``{case_id}_{image_id}.<ext>`` under
+        ``output_dir``. Rows whose license does not start with one of
+        ``allowed_license_prefixes`` are skipped, not failed. Acquisition stops as
+        soon as the next image would exceed ``max_bytes`` of total image content.
+        """
+        output = Path(output_dir)
+        images_dir = output / "images"
+        images_dir.mkdir(parents=True, exist_ok=True)
+        api = json.loads(self._get(f"https://huggingface.co/api/datasets/{selection.repository}").decode())
+        if api.get("private") or api.get("gated") or api.get("disabled"):
+            raise AcquisitionError("case-image repository is private, gated, or disabled")
+        if api.get("sha") != selection.revision:
+            raise AcquisitionError("pinned case-image revision is not the repository head inspected")
+        rows: list[Mapping[str, Any]] = []
+        for row_number in selection.row_numbers:
+            endpoint = ("https://datasets-server.huggingface.co/rows?dataset="
+                        f"{quote(selection.repository, safe='')}&config={quote(selection.config)}"
+                        f"&split={quote(selection.split)}&offset={row_number}&length=1")
+            payload = json.loads(self._get(endpoint).decode())
+            returned = payload.get("rows", [])
+            if len(returned) != 1 or returned[0].get("row_idx") != row_number:
+                raise AcquisitionError(f"case-image row {row_number} could not be pinned")
+            rows.append(returned[0]["row"])
+        records: list[dict[str, Any]] = []
+        skipped_license_count = 0
+        total_bytes = 0
+        for row in rows:
+            required = (selection.case_id_field, selection.image_id_field, selection.image_field,
+                        selection.caption_field, selection.license_field)
+            if any(field not in row for field in required):
+                raise AcquisitionError("case-image schema drift: a required field is missing")
+            license_value = str(row.get(selection.license_field, "") or "").strip()
+            if not _license_accepted(license_value, selection.allowed_license_prefixes):
+                skipped_license_count += 1
+                continue
+            image = row[selection.image_field]
+            image_url = image.get("src") if isinstance(image, Mapping) else None
+            if not image_url:
+                raise AcquisitionError("case-image row has no inline image reference")
+            case_id = str(row[selection.case_id_field])
+            image_id = str(row[selection.image_id_field])
+            figure_id = str(row[selection.figure_id_field]) if selection.figure_id_field else None
+            caption = str(row.get(selection.caption_field, "") or "")
+            head = self._peek_content_type(str(image_url))
+            suffix = ".png" if "png" in head else ".jpg"
+            image_bytes = self._get(str(image_url))
+            if total_bytes + len(image_bytes) > selection.max_bytes:
+                break
+            total_bytes += len(image_bytes)
+            # image_id is frequently already "{case_id}_{original filename with
+            # extension}" (e.g. MultiCaRe's "PMC5015624_01_OC-05-14-g-001.jpg"), so a
+            # naive f"{case_id}_{image_id}{suffix}" would double both the case prefix
+            # and the extension. Strip an existing case_id prefix and any recognized
+            # image extension before composing the final, still-unique filename.
+            base_id = image_id
+            if base_id.startswith(f"{case_id}_"):
+                base_id = base_id[len(case_id) + 1:]
+            for known_suffix in (".png", ".jpg", ".jpeg"):
+                if base_id.lower().endswith(known_suffix):
+                    base_id = base_id[: -len(known_suffix)]
+                    break
+            image_path = images_dir / f"{case_id}_{base_id}{suffix}"
+            image_path.write_bytes(image_bytes)
+            image_hash = "sha256:" + hashlib.sha256(image_bytes).hexdigest()
+            media_type = "image/png" if suffix == ".png" else "image/jpeg"
+            records.append({
+                "case_id": case_id,
+                "image_id": image_id,
+                "figure_id": figure_id,
+                "caption": caption,
+                "image_path": str(image_path),
+                "media_type": media_type,
+                "content_sha256": image_hash,
+                "byte_count": len(image_bytes),
+                "width": image.get("width") if isinstance(image, Mapping) else None,
+                "height": image.get("height") if isinstance(image, Mapping) else None,
+                "license": license_value,
+            })
+        return CaseImageAcquisitionResult(
+            repository=selection.repository,
+            revision=selection.revision,
+            config=selection.config,
+            split=selection.split,
+            records=tuple(records),
+            skipped_license_count=skipped_license_count,
+            total_bytes=total_bytes,
+            license_prefixes=selection.allowed_license_prefixes,
+        )
+
+    def _peek_content_type(self, url: str) -> str:
+        return "png" if url.lower().split("?")[0].endswith(".png") else "jpeg"
 
     def acquire_rows(self, selection: RowSelection) -> RowAcquisitionResult:
         """Acquire a bounded field/value selection through the Dataset Viewer API."""

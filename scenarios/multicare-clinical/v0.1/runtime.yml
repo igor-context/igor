@@ -1,0 +1,67 @@
+schema_version: '0.1'
+fixture_file: fixtures.json
+source:
+  case_source_contract: clinical.cases.v1
+  case_connector_binding: huggingface.multicare-cases.v1
+  case_resource_id: cases
+  image_source_contract: clinical.images.v1
+  image_connector_binding: huggingface.multicare-images.v1
+  image_resource_id: images
+mapping:
+  case_id: case_id
+  article_id: article_id
+  gender: gender
+  age: age
+  case_text: case_text
+  keywords: keywords
+  specialty_tags: specialty_tags
+authority:
+  issuer_ref: pubmed-central-open-access
+  scope_ref: multicare-clinical-case-reports
+  level: source-authoritative
+requests:
+  query: chest X-ray with enlarged heart
+  consumer: clinical-research-agent
+  task: case-similarity-search
+  purpose: clinical-research
+  denied_consumer: unauthorized-agent
+  prohibited_purpose: patient-diagnosis
+  prohibited_task: treatment-recommendation
+limits:
+  max_cases: 8
+  max_images: 20
+  retrieval_limit: 10
+  deterministic_dimension: 16
+  max_image_bytes: 52428800
+commands:
+  sync:
+  - command: igor-huggingface
+    args:
+    - '{selection}'
+    - '{source_output}'
+    - --rows
+    produces: '{source_output}'
+  - command: igor-huggingface
+    args:
+    - '{image_selection}'
+    - '{image_source_dir}'
+    - --case-images
+    produces: '{image_source_output}'
+  qualify:
+    command: igor-runner
+    args:
+    - multicare-qualification-live
+    - '{project_root}'
+    - '{live_profile}'
+    - '{source_dir}'
+    - '{image_source_dir}'
+    - '{qualification_output}'
+    produces: '{qualification_json}'
+  evaluate:
+    command: igor-evaluator
+    args:
+    - authoritative-context
+    - '{qualification_json}'
+    - --output
+    - '{evaluation_output}'
+    produces: '{evaluation_output}'

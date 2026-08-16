@@ -7,6 +7,7 @@ import sys
 from igor_runner.compose import RunnerError, run_context_e2e, run_image_context, run_support_smoke, run_support_huggingface_smoke, run_support_huggingface_e2e
 from igor_runner.document_qualification import qualify_document
 from igor_runner.recare_qualification import qualify_recare, qualify_recare_live
+from igor_runner.multicare_qualification import qualify_multicare, qualify_multicare_live
 from igor_runner.semantic_sql_qualification import qualify_live
 from igor_runner.image_qualification import qualify_huggingface_images
 from igor_runner.standard_query import query_standard_relations
@@ -66,6 +67,15 @@ def main(argv: list[str] | None = None) -> int:
     query = commands.add_parser("query-standard-relations")
     query.add_argument("store")
     query.add_argument("sql")
+    multicare = commands.add_parser("multicare-qualification")
+    multicare.add_argument("scenario")
+    multicare.add_argument("output")
+    multicare_live = commands.add_parser("multicare-qualification-live")
+    multicare_live.add_argument("scenario")
+    multicare_live.add_argument("profile")
+    multicare_live.add_argument("case_acquisition")
+    multicare_live.add_argument("image_acquisition")
+    multicare_live.add_argument("output")
     args = parser.parse_args(argv)
     try:
         if args.command == "context-e2e":
@@ -95,6 +105,15 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         if args.command == "query-standard-relations":
             print(json.dumps(query_standard_relations(args.store, args.sql), sort_keys=True))
+            return 0
+        if args.command == "multicare-qualification":
+            print(json.dumps(qualify_multicare(args.scenario, args.output), sort_keys=True))
+            return 0
+        if args.command == "multicare-qualification-live":
+            print(json.dumps(
+                qualify_multicare_live(args.scenario, args.profile, args.case_acquisition, args.image_acquisition, args.output),
+                sort_keys=True,
+            ))
             return 0
         if args.command == "document-qualification":
             print(json.dumps(qualify_document(args.scenario, args.output, args.acquisition), sort_keys=True))

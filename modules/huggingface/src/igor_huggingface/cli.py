@@ -4,7 +4,7 @@ import argparse
 import json
 from pathlib import Path
 
-from .adapter import DatasetSelection, DocumentSelection, HuggingFaceAdapter, ImageSelection, RowSelection
+from .adapter import CaseImageSelection, DatasetSelection, DocumentSelection, HuggingFaceAdapter, ImageSelection, RowSelection
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -14,6 +14,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--rows", action="store_true")
     parser.add_argument("--document", action="store_true")
     parser.add_argument("--image", action="store_true")
+    parser.add_argument("--case-images", action="store_true")
     args = parser.parse_args(argv)
     if args.rows:
         selection = RowSelection(**json.loads(Path(args.manifest).read_text(encoding="utf-8")))
@@ -24,6 +25,16 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps({"repository": result.repository, "revision": result.revision,
                           "matched_values": result.matched_value_count,
                           "rows": result.row_count, "bytes": result.source_bytes}, sort_keys=True))
+        return 0
+    if args.case_images:
+        selection = CaseImageSelection(**json.loads(Path(args.manifest).read_text(encoding="utf-8")))
+        result = HuggingFaceAdapter().acquire_case_images(selection, args.output)
+        output = Path(args.output)
+        output.mkdir(parents=True, exist_ok=True)
+        (output / "acquisition.json").write_text(json.dumps(result.as_dict(), sort_keys=True, indent=2) + "\n", encoding="utf-8")
+        print(json.dumps({"repository": result.repository, "revision": result.revision,
+                          "images": len(result.records), "skipped_license": result.skipped_license_count,
+                          "bytes": result.total_bytes}, sort_keys=True))
         return 0
     if args.image:
         selection = ImageSelection(**json.loads(Path(args.manifest).read_text(encoding="utf-8")))

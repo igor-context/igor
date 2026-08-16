@@ -1,0 +1,22 @@
+schema_version: "0.1"
+context_contracts:
+  clinical.clinical-agent.v1:
+    contract_id: clinical.clinical-agent
+    version: "1"
+    permitted_consumers: [clinical-research-agent]
+    permitted_tasks: [case-similarity-search, diagnostic-pattern-analysis]
+    permitted_purposes: [clinical-research, medical-education]
+    allowed_modalities: [text, image]
+    required_authority_level: source-authoritative
+    historical_evidence_allowed: true
+    allowed_as_of_max_age_days: 36500
+    budgets:
+      max_package_items: 10
+      max_tokens: 8000
+      max_bytes: 52428800
+    freshness_hours: 0
+    citations_required: true
+    abstain_conditions: [missing_authoritative_evidence, missing_source_case_id]
+    prohibited_uses: [patient-diagnosis, treatment-recommendation, clinical-decision-support]
+    title: Clinical research agent Context Contract
+    description: Governs task-specific publication of authoritative, CC-BY-licensed multimodal clinical case context for research and educational similarity/pattern analysis. Never a diagnostic or treatment source.

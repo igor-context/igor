@@ -82,7 +82,7 @@ PROJECT_DIRECTORIES = (
     "fixtures",
 )
 FIXTURE_DIRECTORIES = ("sources", "expected", "mutations")
-ALLOWED_ASSET_SUFFIXES = {".yml", ".yaml", ".md", ".json", ".txt", ".gitignore", ".example"}
+ALLOWED_ASSET_SUFFIXES = {".yml", ".yaml", ".md", ".json", ".txt", ".gitignore", ".example", ".png", ".jpg", ".jpeg"}
 
 
 class ProjectError(ValueError):
@@ -113,7 +113,7 @@ class ProjectRuntimeFile(BaseModel):
     model_config = ConfigDict(extra="ignore", frozen=True)
 
     schema_version: Literal["0.1"] = PROJECT_VERSION
-    commands: dict[str, ProjectRuntimeCommand] = Field(default_factory=dict)
+    commands: dict[str, ProjectRuntimeCommand | tuple[ProjectRuntimeCommand, ...]] = Field(default_factory=dict)
 
 
 if TYPE_CHECKING:
@@ -2086,11 +2086,28 @@ def _live_configuration_status() -> dict[str, bool]:
 
 def _execute_project_runtime_command(project_root: Path, target_root: Path, command_name: str) -> dict[str, Any]:
     runtime = _load_project_runtime(project_root)
-    command = runtime.commands.get(command_name)
-    if command is None:
+    declared = runtime.commands.get(command_name)
+    if declared is None:
         raise ProjectError(
             f"runtime.yml does not declare a live command for `{command_name}`; add commands.{command_name} or run without --live"
         )
+    if isinstance(declared, tuple):
+        steps = [
+            _execute_project_runtime_step(project_root, target_root, command_name, step, step_index=index)
+            for index, step in enumerate(declared)
+        ]
+        return {"command": command_name, "steps": steps, "valid": all(step["valid"] for step in steps)}
+    return _execute_project_runtime_step(project_root, target_root, command_name, declared, step_index=None)
+
+
+def _execute_project_runtime_step(
+    project_root: Path,
+    target_root: Path,
+    command_name: str,
+    command: ProjectRuntimeCommand,
+    *,
+    step_index: int | None,
+) -> dict[str, Any]:
     _validate_runtime_executable(command.command)
     placeholders = _runtime_placeholders(project_root, target_root)
     args = [_expand_runtime_arg(item, placeholders, project_root, target_root) for item in command.args]
@@ -2189,6 +2206,9 @@ def _runtime_placeholders(project_root: Path, target_root: Path) -> dict[str, st
         "target_root": str(target_root),
         "source_output": str(target_root / "sources" / "acquisition.json"),
         "source_dir": str(target_root / "sources"),
+        "image_selection": str(project_root / "image-selection.json"),
+        "image_source_output": str(target_root / "images" / "acquisition.json"),
+        "image_source_dir": str(target_root / "images"),
         "qualification_output": str(project_root / ".igor" / "runtime" / "qualification"),
         "qualification_json": str(project_root / ".igor" / "runtime" / "qualification" / "qualification.json"),
         "evaluation_output": str(project_root / ".igor" / "runtime" / "evaluation" / "evaluation.json"),

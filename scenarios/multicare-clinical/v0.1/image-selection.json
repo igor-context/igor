@@ -1,0 +1,16 @@
+{
+  "repository": "OpenMed/multicare-case-images",
+  "revision": "c8517124928d2fe3651ee6cb6c560fce66e02344",
+  "config": "default",
+  "split": "train",
+  "case_id_field": "case_id",
+  "image_id_field": "image_id",
+  "image_field": "image",
+  "caption_field": "caption",
+  "license_field": "license",
+  "figure_id_field": "tag",
+  "allowed_license_prefixes": ["cc-by"],
+  "max_bytes": 52428800,
+  "max_rows": 100,
+  "row_numbers": [0, 1, 2, 4, 9, 10, 15, 22, 23, 24, 39, 40, 49]
+}
